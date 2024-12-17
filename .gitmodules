@@ -4,3 +4,6 @@
 [submodule "core-db"]
 	path = core-db
 	url = https://github.com/eitssg/core-db.git
+[submodule "core-docs"]
+	path = core-docs
+	url = https://github.com/eitssg/core-docs.git
