@@ -1,0 +1,18 @@
+/* custom.css */
+.wy-nav-content {
+    max-width: none;
+    padding: 0 20px;
+}
+
+.wy-nav-side {
+    width: 300px;
+}
+
+.wy-nav-content-wrap {
+    margin-left: 300px;
+}
+
+.rubric {
+    font-size: 1.4em;
+    font-weight: bold;
+}

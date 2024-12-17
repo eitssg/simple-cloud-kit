@@ -1,0 +1,6 @@
+[submodule "core-framework"]
+	path = core-framework
+	url = https://github.com/eitssg/core-framework.git
+[submodule "core-db"]
+	path = core-db
+	url = https://github.com/eitssg/core-db.git
