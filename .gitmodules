@@ -7,3 +7,6 @@
 [submodule "core-docs"]
 	path = core-docs
 	url = https://github.com/eitssg/core-docs.git
+[submodule "core-api"]
+	path = core-api
+	url = https://github.com/eitssg/core-api.git
