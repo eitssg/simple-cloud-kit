@@ -10,3 +10,6 @@
 [submodule "core-api"]
 	path = core-api
 	url = https://github.com/eitssg/core-api.git
+[submodule "core-execute"]
+	path = core-execute
+	url = https://github.com/eitssg/core-execute.git
