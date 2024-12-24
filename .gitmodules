@@ -16,3 +16,9 @@
 [submodule "core-runner"]
 	path = core-runner
 	url = https://github.com/eitssg/core-runner.git
+[submodule "core-automation-docker"]
+	path = core-automation-docker
+	url = https://github.com/eitssg/core-automation-docker.git
+[submodule "core-docker"]
+	path = core-docker
+	url = https://github.com/eitssg/core-docker.git
