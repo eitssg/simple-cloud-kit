@@ -410,6 +410,26 @@ email: <jbarwick@eits.com.sg>
 
 Please contribute.  Please reach out to me if you would like to create a development branch that we can ultimately merge into the base.
 
+All modules can be found on GitHub with the following links:
+
+* https://github.com/eitssg/core-framework.git
+* https://github.com/eitssg/core-db.git
+* https://github.com/eitssg/core-execute.git
+* https://github.com/eitssg/core-runner.git
+* https://github.com/eitssg/core-component-compiler.git
+* https://github.com/eitssg/core-deployspec-compier.git
+* https://github.com/eitssg/core-invoker.git
+* https://github.com/eitssg/core-api.git
+* https://github.com/eitssg/core-cli.git
+* https://github.com/eitssg/core-ui.git
+* https://github.com/eitssg/core-docker.git
+* https://github.com/eitssg/core-docs.git
+* https://github.com/eitssg/simple-cloud-kit.git
+
+PyPi Repositories can be found here:
+
+* https://pypi.org/project/simple-cloud-kit
+
 # Documentation
 
 The idea on this project is to push documentation to GitHub type Wiki or perhaps I can geet a free Atlassian OSS Conluence site.  For all the details and goodies of implementing, using, and updating the core frameworks, see the online documentation:
