@@ -16,12 +16,12 @@
 [submodule "core-docker"]
 	path = core-docker
 	url = https://github.com/eitssg/core-docker.git
-[submodule "core-invoker"]
-	path = core-invoker
-	url = https://github.com/eitssg/core-invoker.git
 [submodule "core-component-compiler"]
 	path = core-component-compiler
 	url = https://github.com/eitssg/core-component-compiler.git
 [submodule "core-deployspec-compiler"]
 	path = core-deployspec-compiler
 	url = https://github.com/eitssg/core-deployspec-compiler.git
+[submodule "sck-core-runner"]
+	path = sck-core-runner
+	url = https://github.com/eitssg/sck-core-runner.git
