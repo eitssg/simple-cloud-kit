@@ -10,9 +10,6 @@
 [submodule "core-docker"]
 	path = core-docker
 	url = https://github.com/eitssg/core-docker.git
-[submodule "core-component-compiler"]
-	path = core-component-compiler
-	url = https://github.com/eitssg/core-component-compiler.git
 [submodule "sck-core-runner"]
 	path = sck-core-runner
 	url = https://github.com/eitssg/sck-core-runner.git
@@ -25,3 +22,6 @@
 [submodule "sck-core-execute"]
 	path = sck-core-execute
 	url = https://github.com/eitssg/sck-core-execute.git
+[submodule "sck-core-deployspec"]
+	path = sck-core-deployspec
+	url = https://github.com/eitssg/sck-core-deployspec.git
