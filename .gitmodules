@@ -13,9 +13,6 @@
 [submodule "core-execute"]
 	path = core-execute
 	url = https://github.com/eitssg/core-execute.git
-[submodule "core-runner"]
-	path = core-runner
-	url = https://github.com/eitssg/core-runner.git
 [submodule "core-docker"]
 	path = core-docker
 	url = https://github.com/eitssg/core-docker.git
