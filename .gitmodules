@@ -28,3 +28,6 @@
 [submodule "sck-core-docker"]
 	path = sck-core-docker
 	url = https://github.com/eitssg/sck-core-docker.git
+[submodule "sck-core-cli"]
+	path = sck-core-cli
+	url = https://github.com/eitssg/sck-core-cli.git
