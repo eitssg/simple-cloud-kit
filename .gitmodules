@@ -1,6 +1,3 @@
-[submodule "core-docs"]
-	path = core-docs
-	url = https://github.com/eitssg/core-docs.git
 [submodule "core-docker"]
 	path = core-docker
 	url = https://github.com/eitssg/core-docker.git
@@ -25,3 +22,6 @@
 [submodule "sck-core-db"]
 	path = sck-core-db
 	url = https://github.com/eitssg/sck-core-db.git
+[submodule "sck-core-api"]
+	path = sck-core-api
+	url = https://github.com/eitssg/sck-core-api.git
