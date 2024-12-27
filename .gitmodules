@@ -7,9 +7,6 @@
 [submodule "core-api"]
 	path = core-api
 	url = https://github.com/eitssg/core-api.git
-[submodule "core-execute"]
-	path = core-execute
-	url = https://github.com/eitssg/core-execute.git
 [submodule "core-docker"]
 	path = core-docker
 	url = https://github.com/eitssg/core-docker.git
@@ -25,3 +22,6 @@
 [submodule "sck-core-invoker"]
 	path = sck-core-invoker
 	url = https://github.com/eitssg/sck-core-invoker.git
+[submodule "sck-core-framework"]
+	path = sck-core-framework
+	url = https://github.com/eitssg/sck-core-framework.git
