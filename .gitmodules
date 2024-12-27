@@ -13,9 +13,6 @@
 [submodule "core-component-compiler"]
 	path = core-component-compiler
 	url = https://github.com/eitssg/core-component-compiler.git
-[submodule "core-deployspec-compiler"]
-	path = core-deployspec-compiler
-	url = https://github.com/eitssg/core-deployspec-compiler.git
 [submodule "sck-core-runner"]
 	path = sck-core-runner
 	url = https://github.com/eitssg/sck-core-runner.git
@@ -25,3 +22,6 @@
 [submodule "sck-core-framework"]
 	path = sck-core-framework
 	url = https://github.com/eitssg/sck-core-framework.git
+[submodule "sck-core-execute"]
+	path = sck-core-execute
+	url = https://github.com/eitssg/sck-core-execute.git
