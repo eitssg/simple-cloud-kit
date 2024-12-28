@@ -1,11 +1,14 @@
-
 from typing import Any
 import os
 import json
 import sys
 import subprocess
+import argparse
 import tomlkit
 from tomlkit.toml_document import TOMLDocument
+
+
+move_tag = False
 
 
 def ensure_git_tag_exists(module: str, data: dict):
@@ -20,11 +23,20 @@ def ensure_git_tag_exists(module: str, data: dict):
 
     try:
         # Commit all changes
-        subprocess.run(["git", "add", "--all"], check=True)
-        subprocess.run(["git", "commit", "-m", f"Version {project_version}"], check=True)
+        try:
+            # Call black formatter
+            subprocess.run(["black", "."], check=True)
 
-        # push the changes
-        subprocess.run(["git", "push"], check=True)
+            # Commit all changes
+            subprocess.run(["git", "add", "--all"], check=True)
+            subprocess.run(
+                ["git", "commit", "-m", f"Version {project_version}"], check=True
+            )
+
+            # push the changes
+            subprocess.run(["git", "push"], check=True)
+        except subprocess.CalledProcessError:
+            pass
 
         # check if the git tag exists
         # get all of the git tags into a result
@@ -35,7 +47,14 @@ def ensure_git_tag_exists(module: str, data: dict):
 
         if git_tag in git_tags:
             print(f"   Git tag {git_tag} exists")
-            return
+            if not move_tag:
+                return
+
+            # delete the tag from the origin
+            subprocess.run(["git", "push", "--delete", "origin", git_tag], check=True)
+
+            # delete the tag from the local
+            subprocess.run(["git", "tag", "-d", git_tag], check=True)
 
         # create a git tag
         subprocess.run(["git", "tag", git_tag], check=True)
@@ -163,8 +182,17 @@ def update_requirements():
 
 
 def main():
+    global move_tag
+
     try:
+        p = argparse.ArgumentParser()
+        p.add_argument("--move-tag", action="store_true", required=False)
+        args = p.parse_args()
+        if args.move_tag:
+            move_tag = True
+
         update_requirements()
+
     except Exception as e:
         print(e)
         sys.exit(1)

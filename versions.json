@@ -1,6 +1,6 @@
 {
     "project": {
-        "version": "0.0.1",
+        "version": "0.0.2",
         "description": "This is the version of the singtel-cloud-kit project",
         "develop": false
     },
@@ -90,8 +90,8 @@
             ]
         },
         {
-            "name": "sck-core-docker",
-            "description": "This module is the docker container for the project",
+            "name": "sck-core-docs",
+            "description": "This module is the documentation for the project",
             "dependsOn": [
                 "sck-core-framework",
                 "sck-core-db",
@@ -106,8 +106,8 @@
             ]
         },
         {
-            "name": "sck-core-docs",
-            "description": "This module is the documentation for the project",
+            "name": "sck-core-docker",
+            "description": "This module is the docker container for the project",
             "dependsOn": [
                 "sck-core-framework",
                 "sck-core-db",
@@ -119,9 +119,10 @@
                 "sck-core-organization",
                 "sck-core-api",
                 "sck-core-cli",
-                "sck-core-docker"
+                "sck-core-docs"
             ]
         }
+
     ],
     "dependencies": {
         "python": "^3.12",
