@@ -1,8 +1,8 @@
 {
     "project": {
-        "version": "0.0.2",
+        "version": "0.0.3",
         "description": "This is the version of the singtel-cloud-kit project",
-        "develop": false
+        "develop": true
     },
     "modules": [
         {
@@ -30,6 +30,7 @@
             "description": "This is the module theat 'kicks-off' or runs the AWS step-function",
             "dependsOn": [
                 "sck-core-framework",
+                "sck-core-db",
                 "sck-core-execute"
             ]
         },
@@ -56,6 +57,7 @@
                 "sck-core-framework",
                 "sck-core-db",
                 "sck-core-runner",
+                "sck-core-execute",
                 "sck-core-deployspec",
                 "sck-core-component"
             ]
@@ -76,6 +78,14 @@
                 "sck-core-db",
                 "sck-core-invoker",
                 "sck-core-organization"
+            ]
+        },
+        {
+            "name": "sck-core-codecommit",
+            "description": "This module listens for codecommit events so you can deploy infrastructure automatically",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-api"
             ]
         },
         {
@@ -183,7 +193,7 @@
         "fastapi": "^0.115.6",
         "httpx": "^0.28.1",
         "poetry": ">=1.8.5",
-        "websockets": "{ version = \"*\", optional = true }",
+        "websockets": "^14.1",
         "sphinx-autodoc-typehints": "^2.5.0",
         "sphinxcontrib-httpdomain": "^1.8.1",
         "sphinx-autobuild": "^2024.10.3",

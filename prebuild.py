@@ -99,7 +99,7 @@ def update_project_dependencies(poetry_content, module: str, data: dict):
     dependencies = poetry_content["dependencies"]
     for depend in dependson:
         if develop:
-            dependencies[depend] = {"path": f"../{depend}", "depend": True}
+            dependencies[depend] = {"path": f"../{depend}", "develop": True}
         else:
             dependencies[depend] = f"^{project_version}"
 

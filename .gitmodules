@@ -34,3 +34,6 @@
 [submodule "sck-core-organization"]
 	path = sck-core-organization
 	url = https://github.com/eitssg/sck-core-organization.git
+[submodule "sck-core-codecommit"]
+	path = sck-core-codecommit
+	url = https://github.com/eitssg/sck-core-codecommit.git
