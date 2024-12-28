@@ -17,6 +17,12 @@ if (-not (Test-Path -Path "./.env" -PathType Leaf)) {
 
     # Wrote the line "LOCAL_MODE=True" to .env
     Add-Content -Path ".env" -Value "LOCAL_MODE=True"
+    Add-Content -Path ".env" -Value "CLIENT=test-client"
+    Add-Content -Path ".env" -Value "DYNAMODB_HOST=http://localhost:8000"
+    Add-Content -Path ".env" -Value "VOLUME=P:\core"
+    Add-Content -Path ".env" -Value "LOG_DIR=P:\core\logs"
+    Add-Content -Path ".env" -Value "CONSOLE=interactive"
+    Add-Content -Path ".env" -Value "LOG_LEVEL=DEBUG"
 }
 
 poetry run pytest

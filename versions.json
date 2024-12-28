@@ -1,0 +1,194 @@
+{
+    "project": {
+        "version": "0.0.1",
+        "description": "This is the version of the singtel-cloud-kit project",
+        "develop": false
+    },
+    "modules": [
+        {
+            "name": "sck-core-framework",
+            "description": "This is top level dependency for the project",
+            "dependsOn": []
+        },
+        {
+            "name": "sck-core-db",
+            "description": "This is the the database module for DynamdDB",
+            "dependsOn": [
+                "sck-core-framework"
+            ]
+        },
+        {
+            "name": "sck-core-execute",
+            "description": "This is the module for executing arbitrary actions code as AWS step-function",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-db"
+            ]
+        },
+        {
+            "name": "sck-core-runner",
+            "description": "This is the module theat 'kicks-off' or runs the AWS step-function",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-execute"
+            ]
+        },
+        {
+            "name": "sck-core-deployspec",
+            "description": "This is the module that deploys AWS cloudformation tempaltes",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-db"
+            ]
+        },
+        {
+            "name": "sck-core-component",
+            "description": "This module compiles and deploys Core Automation Templates in Lifecycle",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-db"
+            ]
+        },
+        {
+            "name": "sck-core-invoker",
+            "description": "This module invokes the runner, deployspec, or compoenent based on the TaskPayload",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-db",
+                "sck-core-runner",
+                "sck-core-deployspec",
+                "sck-core-component"
+            ]
+        },
+        {
+            "name": "sck-core-organization",
+            "description": "This module manages the AWS organization",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-db"
+            ]
+        },
+        {
+            "name": "sck-core-api",
+            "description": "This module is the API Gateway/JSON FastAPI for the project",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-db",
+                "sck-core-invoker",
+                "sck-core-organization"
+            ]
+        },
+        {
+            "name": "sck-core-cli",
+            "description": "This module is the command line interface for the project",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-db",
+                "sck-core-organization",
+                "sck-core-invoker",
+                "sck-core-api"
+            ]
+        },
+        {
+            "name": "sck-core-docker",
+            "description": "This module is the docker container for the project",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-db",
+                "sck-core-execute",
+                "sck-core-runner",
+                "sck-core-component",
+                "sck-core-deployspec",
+                "sck-core-invoker",
+                "sck-core-organization",
+                "sck-core-api",
+                "sck-core-cli"
+            ]
+        },
+        {
+            "name": "sck-core-docs",
+            "description": "This module is the documentation for the project",
+            "dependsOn": [
+                "sck-core-framework",
+                "sck-core-db",
+                "sck-core-execute",
+                "sck-core-runner",
+                "sck-core-component",
+                "sck-core-deployspec",
+                "sck-core-invoker",
+                "sck-core-organization",
+                "sck-core-api",
+                "sck-core-cli",
+                "sck-core-docker"
+            ]
+        }
+    ],
+    "dependencies": {
+        "python": "^3.12",
+        "boto3": ">=1.35.87",
+        "botocore": ">=1.35.87",
+        "netaddr": "^1.3.0",
+        "pyyaml": "^6.0.2",
+        "pyyaml-include": "^2.1",
+        "filters": "^1.3.2",
+        "deepdiff": "^7.0.1",
+        "jinja2": "^3.1.4",
+        "jmespath": "^1.0.1",
+        "pydantic": "^2.10.3",
+        "requests": "^2.32.3",
+        "pandas": "^2.2.2",
+        "ruamel-yaml": "^0.18.6",
+        "tabulate": "^0.9.0",
+        "cfnresponse": ">=1.1.4",
+        "cryptography": "^42.0.8",
+        "argcomplete": ">=3.3.0",
+        "python-dateutil": ">=2.9.0.post0",
+        "s3transfer": ">=0.10.1",
+        "six": ">=1.16.0",
+        "urllib3": "^2.2.3",
+        "xmltodict": ">=0.13.0",
+        "yq": ">=3.4.3",
+        "fastapi": "^0.115.4",
+        "python-dotenv": "^1.0.1",
+        "cattrs": ">=23.1.2",
+        "sphinx": "^8.1.3",
+        "myst-parser": "^4.0.0",
+        "sphinx-rtd-theme": "^3.0.2",
+        "sphinx_design": "^0.6.1",
+        "sphinxcontrib-openapi": "^0.8.4",
+        "sphinxcontrib-napoleon": "^0.7",
+        "python-slugify": "^8.0.4"
+    },
+    "dev-dependencies": {
+        "pytest": "^8.3.3",
+        "pytest-cov": "^6.0.0",
+        "pytest-mock": "^3.6.1",
+        "pytest-xdist": "^3.0.0",
+        "pytest-html": "^4.0.0",
+        "pytest-dotenv": "^0.5.2",
+        "pytest-asyncio": "^0.25.0",
+        "boto3-stubs": ">=1.35.87",
+        "pylance": "^0.21.0",
+        "types-pyyaml": "^6.0.12.20240917",
+        "types-tabulate": "^0.9.0.20240106",
+        "types-jmespath": "^1.0.2.20240106",
+        "types-python-dateutil": "^2.9.0.20241206",
+        "cfn-lint": "^1.18.4",
+        "flake8": "^7.1.1",
+        "yamllint": "^1.35.1",
+        "auto-changelog": "^0.6.0",
+        "black": "^24.10.0",
+        "uvicorn": "^0.34.0",
+        "fastapi": "^0.115.6",
+        "httpx": "^0.28.1",
+        "poetry": ">=1.8.5",
+        "websockets": "{ version = \"*\", optional = true }",
+        "sphinx-autodoc-typehints": "^2.5.0",
+        "sphinxcontrib-httpdomain": "^1.8.1",
+        "sphinx-autobuild": "^2024.10.3",
+        "furo": "^2024.8.6",
+        "doc8": "^1.1.2",
+        "types-pygments": "^2.18.0.20240506",
+        "rstcheck": "^6.2.4"
+    }
+}
