@@ -31,3 +31,6 @@
 [submodule "sck-core-cli"]
 	path = sck-core-cli
 	url = https://github.com/eitssg/sck-core-cli.git
+[submodule "sck-core-organization"]
+	path = sck-core-organization
+	url = https://github.com/eitssg/sck-core-organization.git
