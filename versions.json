@@ -26,12 +26,20 @@
             ]
         },
         {
+            "name": "sck-core-report",
+            "description": "A lambda function to inspect the task payload from the step-function",
+            "dependsOn": [
+                "sck-core-framework"
+            ]
+        },
+        {
             "name": "sck-core-runner",
             "description": "This is the module theat 'kicks-off' or runs the AWS step-function",
             "dependsOn": [
                 "sck-core-framework",
                 "sck-core-db",
-                "sck-core-execute"
+                "sck-core-execute",
+                "sck-core-report"
             ]
         },
         {
