@@ -349,14 +349,18 @@ The basic structure of the repsitory will be:
 **Repository:** simple-cloud-kit
 **Version:** 0.0.0-alpha
 
-* **core-framework:** The basic shared model framework
-* **core-deployment:** Deploys cloud service infrastucture and appls
-* **core-compiler:** Compiles templates into CloudFormation "applications"
-* **core-engine:** Runs in Lambda to perform mutiple steps of deploying multiple componets simialr to a stack-set
-* **core-invoker:** Provides a security boundry establing and minimizing blast radius with RBAC controls
-* **core-api:** An database of
-* **core-docs:** a set of User Guides and API Guides for using Simple Cloud Kit
-* **sck-mod-core:** Commandline Tools
+* **sck-core-framework:** The basic shared model framework
+* **sck-core-db:** The database models for storing state in DynamoDB
+* **sck-core-deployspec:** Deploys cloud service infrastucture and appls
+* **sck-core-component:** Compiles templates into CloudFormation "applications"
+* **sck-core-engine:** Runs in Lambda to perform mutiple steps of deploying multiple componets simialr to a stack-set
+* **sck-core-runner:** A mechnanism to execute the sck-core-engine stepfunctions
+* **sck-core-invoker:** Provides a security boundry establing and minimizing blast radius with RBAC controls.  Runs runner, execute, componnet, deployspec
+* **sck-core-organization:** API and scripts to manage Organization / Billing Account (Control Tower and Account Factory)
+* **sck-core-api:** An Rest API
+* **sck-core-cli:** A Commandline Interface
+* **sck-core-docs:** a set of User Guides and API Guides for using Simple Cloud Kit
+* **sck-core-docker:** A docker image project to run everthing in a container
 
 ### Installation
 
