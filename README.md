@@ -382,6 +382,19 @@ This is a UI/Dashboard to deploy on AWS to allow GUI popuplation and generation 
   ...help text (coming soon!!!)
 ```
 
+You can make core available in your PATH if you wish.  Here is how I would do it (Installation program comming soon)
+
+In the "simple-cloud-kit" folder, create a new subfolder called "bin", copy "core.exe" into it, and then add that folder to your path:
+
+```bash
+cd simple-cloud-kit
+mkdir bin
+cp .venv/bin/core.exe bin/core.exe
+CWD=$(cwd)
+echo "export PATH=$PATH:/$CWD/bin" >> ~/.bashrc
+```
+Do something like above or similar.  Then you can run "core" from anywhere.  Even your own custom projects.
+
 ### Setup / Contributing
 
 #### Setup
