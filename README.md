@@ -514,7 +514,7 @@ PyPi Repositories can be found here:
 
 # Documentation
 
-The idea on this project is to push documentation to GitHub type Wiki or perhaps I can geet a free Atlassian OSS Conluence site.  For all the details and goodies of implementing, using, and updating the core frameworks, see the online documentation:
+The idea on this project is to push documentation to GitHub type Wiki or perhaps I can get a free Atlassian OSS Conluence site.  For all the details and goodies of implementing, using, and updating the core frameworks, see the online documentation:
 
 TBD
 
