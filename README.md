@@ -358,6 +358,63 @@ The basic structure of the repsitory will be:
 * **core-docs:** a set of User Guides and API Guides for using Simple Cloud Kit
 * **sck-mod-core:** Commandline Tools
 
+### Installation
+
+```bash
+# python -m venv .venv
+# source .venv/bin/activate
+# pip install simple-cloud-kit
+# core --help
+  Simple Cloud Kit (c) 2024 Exclusive Information Technology Service
+  Core 0.0.1-pre01934jf
+  ...help text (coming soon!!!)
+```
+
+### Setup / Contributing
+
+#### Setup
+
+##### step 1
+
+Clone the repositry:
+
+```bash
+git clone https://github.com/eitssg/simple-cloud-kit.git
+cd simple-cloud-kit
+python -m venv .venv
+```
+There are 14 git submodules in this repo.  Sync all the submodules and pull all the subprojects
+
+##### step 2
+
+In IntelliJ or VSCode, select this python as the interpreter.  
+
+install poetry
+```bash
+source .venv/bin/activate
+pip install poetry poetry-dynamic-versioning
+```
+
+Next, evaluate the build tool scripts for windows (.ps1) powershell, or mac/linux (.sh) bash (not zsh or sh...bash)
+
+In vsCode or Intellij, add each of the 14 submodules to the workspace. (adding in the 'path')
+
+Switch all project TOML files to "develop" mode by setting project dependeces "develop=true" in the 14 TOML files.
+
+```bash
+python ./prebuild.py
+```
+
+If you wish to switch back to "publish" production mode, open `versions.json` and set the *develop* attribute to `false` and re-run the prebuild.py script
+
+run "build-all.sh" to install and build all submodules and install all dependencies
+
+```bash
+source ./build-all.sh
+```
+
+Talk to me via Github or email (jbarwick@eits.com.sg)
+
 ### Simple Cloud Kit Dashboard
 
 **STATE:** **_INCUBATION_**
