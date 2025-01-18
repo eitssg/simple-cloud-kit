@@ -40,7 +40,7 @@ poetry run pip -q install --upgrade -t package $whlFile.FullName
 
 if (Test-Path -Path "package") {
     Set-Location -Path package
-    & "C:\Program Files\7-Zip\7z.exe" a -bd -bb0 ../$artefactName * -xr!*.pyc > $null 2>&1
+    & "C:\Program Files\7-Zip\7z.exe" a -bd -bb0 ../$artefactName * -x"r!*.pyc" > $null 2>&1
     Set-Location -Path ..
     Remove-Item -Path "package" -Recurse -Force
 } else {
