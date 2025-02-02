@@ -27,26 +27,12 @@ Write-Host "`n---- Python version and source folder"
 $pythonCommand = Get-Command python
 $pythonCommand | Select-Object -Property Version, Source | Format-List | Out-String -Stream | Select-String -Pattern "Version|Source"
 
-Write-Host "`n---- Installing/updating dependencies"
-python -m pip -q install --upgrade pip
-python -m pip -q install --upgrade poetry poetry-dynamic-versioning polib
-
-poetry self add -q poetry-plugin-export
-
-poetry config warnings.export false
-
 # Run the poetry build command
-poetry update
+Write-Host "`n---- Installing the project"
+poetry install
+poetry lock
 
-Write-Host "`n---- Building the project"
+Write-Host "`n---- Building the distribution files"
 
 poetry build
 
-# Install the project
-Write-Host "`n---- Installing the project"
-poetry install
-
-# add to the existing file ../requirements.txt the output of "pip freeze" command and ensure the file is sorted
-Write-Host "`n---- Updating requirements.txt"
-
-python ..\pipit.py

@@ -31,14 +31,6 @@ function Build-AppComponent {
         Write-Host "Building $project"
         Write-Host "--------------------------------------------"
 
-        Write-Host "We want python $version"
-        Write-Host "Active python version is: $(python --version)"
-
-        # Remove poetry.lock if it exists (this is temporary)
-        if (Test-Path -Path "poetry.lock" -PathType Leaf) {
-            Remove-Item -Path "poetry.lock" -Force
-        }
-
         . ..\build-module.ps1 -type $type
 
     }
