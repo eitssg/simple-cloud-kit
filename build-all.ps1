@@ -70,6 +70,7 @@ Build-AllComponents -type "app" -version "3.12.4" -projects $projects
 
 $lambdaProjects = @(
     "sck-core-execute",
+    "sck-core-report",
     "sck-core-runner"
     "sck-core-component",
     "sck-core-deployspec",

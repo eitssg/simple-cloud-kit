@@ -1,8 +1,8 @@
 {
     "project": {
-        "version": "0.0.5",
+        "version": "0.0.6",
         "description": "This is the version of the singtel-cloud-kit project",
-        "develop": false
+        "develop": true
     },
     "modules": [
         {
@@ -114,6 +114,7 @@
                 "sck-core-framework",
                 "sck-core-db",
                 "sck-core-execute",
+                "sck-core-report",
                 "sck-core-runner",
                 "sck-core-component",
                 "sck-core-deployspec",
@@ -130,6 +131,7 @@
                 "sck-core-framework",
                 "sck-core-db",
                 "sck-core-execute",
+                "sck-core-report",
                 "sck-core-runner",
                 "sck-core-component",
                 "sck-core-deployspec",
