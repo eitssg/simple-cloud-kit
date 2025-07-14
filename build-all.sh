@@ -30,14 +30,10 @@ Build_AppComponent() {
     echo "--------------------------------------------"
 
     echo "We want python $version"
+    pyenv local $version
     echo "Active python version is: $(python --version)"
 
-    # Remove poetry.lock if it exists (this is temporary)
-    if [ -f "poetry.lock" ]; then
-        rm -f "poetry.lock"
-    fi
-
-    source ../build-module.sh -type "$type" -version "$version" "$clean"
+    source ../build-module.sh -type "$type" -version "$version" "--clean"
 
     # Return to the original directory
     cd "$mainDir"
@@ -62,7 +58,7 @@ core_projects=(
     "sck-core-db"
 )
 
-Build_AllComponents "app" "3.13.1" "${core_projects[@]}"
+Build_AllComponents "app" "3.13.2" "${core_projects[@]}"
 
 # Initialize a variable with a list of folders for Lambda projects
 # core-lambda-api is dependent on the core-framework so use the same python version. AWS maximum lambda runtime is "python3.12"
@@ -78,7 +74,7 @@ lambdaProjects=(
     "sck-core-codecommit"
 )
 
-Build_AllComponents "lambda" "3.13.1" "${lambdaProjects[@]}"
+Build_AllComponents "lambda" "3.13.2" "${lambdaProjects[@]}"
 
 # Initialize a variable with a list of folders for regular projects
 cli_projects=(
@@ -88,4 +84,4 @@ cli_projects=(
 
 # Build all command-line apps and modules with python 3.12.4. There are only 2 "command line" executable
 # sck-mod-core and docs. sck-mod-core command is "core", and docs command is "core-docs"
-Build_AllComponents "app" "3.13.1" "${cli_projects[@]}"
+Build_AllComponents "app" "3.13.2" "${cli_projects[@]}"

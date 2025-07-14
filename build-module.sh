@@ -2,7 +2,7 @@
 
 # if the paremter $1 is empty then default to "module"
 type=${2:-module}
-version=${4:-3.13.1}
+version=${4:-3.13.2}
 clean=${5}
 
 echo "Building module type: $type"
@@ -19,7 +19,7 @@ if [ ! "$VIRTUAL_ENV" = "" ]; then
    deactivate
 fi
 
-if [ "$clean" = "-clean" ]; then
+if [ "$clean" = "--clean" ]; then
    echo "Removing current virtualenv"
    if [ -d .venv ]; then
       rm -rf .venv
