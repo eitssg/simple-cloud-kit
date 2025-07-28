@@ -52,11 +52,16 @@ if (Test-Path -Path "dist" -PathType Container) {
     Remove-Item -Path "dist" -Recurse -Force
 }
 
-Remove-Item -Path "poetry.lock" -Force
+# Ensure substituion for dynamic versioning are executed
+poetry-dynamic-versioning
 
 Write-Host "`n---- Installing the project and depndencies using Poetry"
 
+Remove-Item -Path "poetry.lock" -Force -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force build, dist, *.egg-info -ErrorAction SilentlyContinue
+
 poetry install
+poetry run pip uninstall -y ruamel.yaml.clib # can't run on aws lambda, so remove it
 
 Write-Host "`n---- Building the distribution files for project: $packageName v${version}`n"
 

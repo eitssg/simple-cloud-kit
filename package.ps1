@@ -85,7 +85,7 @@ if (-not (Get-Command "C:\Program Files\7-Zip\7z.exe" -ErrorAction SilentlyConti
 
 # Install the .whl file into the package folder
 Write-Host "Installing $($whlFile.Name) into package folder"
-pip -q install --upgrade -t package $whlFile.FullName
+pip -q install -t package $whlFile.FullName
 
 if (Test-Path -Path "package") {
     Set-Location -Path package

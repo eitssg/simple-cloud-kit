@@ -1,6 +1,6 @@
 {
     "project": {
-        "version": "0.0.7",
+        "version": "0.0.9",
         "description": "This is the version of the singtel-cloud-kit project",
         "develop": false
     },
