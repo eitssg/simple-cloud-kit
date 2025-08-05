@@ -1,8 +1,8 @@
 {
     "project": {
-        "version": "0.0.9",
+        "version": "0.0.10",
         "description": "This is the version of the singtel-cloud-kit project",
-        "develop": false
+        "develop": true
     },
     "modules": [
         {
@@ -47,7 +47,8 @@
             "description": "This is the module that deploys AWS cloudformation tempaltes",
             "dependsOn": [
                 "sck-core-framework",
-                "sck-core-db"
+                "sck-core-db",
+                "sck-core-execute"
             ]
         },
         {
