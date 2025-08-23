@@ -40,3 +40,12 @@
 [submodule "sck-core-report"]
 	path = sck-core-report
 	url = https://github.com/eitssg/sck-core-report.git
+[submodule "sck-core-docker-base"]
+	path = sck-core-docker-base
+	url = https://github.com/eitssg/sck-core-docker-base.git
+[submodule "sck-core-ui"]
+	path = sck-core-ui
+	url = https://github.com/eitssg/sck-core-ui.git
+[submodule "sck-core-docker-server"]
+	path = sck-core-docker-server
+	url = https://github.com/eitssg/sck-core-docker-server.git

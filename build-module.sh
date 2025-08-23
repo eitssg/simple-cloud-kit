@@ -5,8 +5,6 @@ type=${2:-module}
 version=${4:-3.13.2}
 clean=${5}
 
-echo "Building module type: $type"
-
 # if the file pyproject.toml does not exist, return with error "Must be in project folder":
 if [ ! -f "pyproject.toml" ]; then
     echo "Must be in project folder"
@@ -53,8 +51,7 @@ source ../pytest.sh
 # Source and execute the publish script
 source ../publish.sh
 
-if [ "$type" = "lambda" ]; then
-
-    # Source and execute the package script
+# if the file .lambda exists, then it is a lambda module
+if [ -f ".lambda" ]; then
     source ../package.sh
 fi

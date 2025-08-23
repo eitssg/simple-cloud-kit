@@ -29,9 +29,7 @@ def ensure_git_tag_exists(module: str, data: dict):
 
             # Commit all changes
             subprocess.run(["git", "add", "--all"], check=True)
-            subprocess.run(
-                ["git", "commit", "-m", f"Version {project_version}"], check=True
-            )
+            subprocess.run(["git", "commit", "-m", f"Version {project_version}"], check=True)
 
             # push the changes
             subprocess.run(["git", "push"], check=True)
@@ -40,9 +38,7 @@ def ensure_git_tag_exists(module: str, data: dict):
 
         # check if the git tag exists
         # get all of the git tags into a result
-        result = subprocess.run(
-            ["git", "tag", "-l"], capture_output=True, text=True, check=True
-        )
+        result = subprocess.run(["git", "tag", "-l"], capture_output=True, text=True, check=True)
         git_tags = result.stdout.splitlines()
 
         if git_tag in git_tags:

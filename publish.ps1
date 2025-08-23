@@ -4,7 +4,7 @@ $packageName = (Get-Item -Path ".\").Name
 # if the enironment variable NEXUS_SERVER is not set, return with error "NEXUS_SERVER environment variable not set"
 if ((-not $Env:NEXUS_SERVER) -or (-not $Env:NEXUS_USERNAME) -or (-not $Env:NEXUS_PASSWORD)) {
     Write-Host "Error while PUBLISHING: NEXUS_SERVER environment variables are not set"
-    return
+    exit 1
 }
 
 Write-Host "`n---- PUBLISHING project: $packageName to $Env:NEXUS_SERVER/repository/pypi-releases/"
@@ -12,9 +12,16 @@ Write-Host "`n---- PUBLISHING project: $packageName to $Env:NEXUS_SERVER/reposit
 # if the file pyproject.toml does not exist, return with error "Must be in project folder":
 if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
     Write-Host "Must be in project folder"
-    return
+    exit 1
+
 }
 
+# if the dist folder is empty, return with error "No distribution files found. Run 'poetry build' to create them."
+if (-not (Test-Path -Path "./dist" -PathType Container) -or
+    (-not (Get-ChildItem -Path "./dist" -File | Where-Object { $_.Name -match "\.whl$|\.tar\.gz$" }))) {
+    Write-Host "No distribution files found. Run 'poetry build' to create them."
+    exit 1
+}
 
 # Set the URL for the nexus-releases repository
 poetry config repositories.nexus-releases $Env:NEXUS_SERVER/repository/pypi-releases/

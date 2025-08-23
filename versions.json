@@ -1,6 +1,6 @@
 {
     "project": {
-        "version": "0.0.6",
+        "version": "0.0.10",
         "description": "This is the version of the singtel-cloud-kit project",
         "develop": true
     },
@@ -47,7 +47,8 @@
             "description": "This is the module that deploys AWS cloudformation tempaltes",
             "dependsOn": [
                 "sck-core-framework",
-                "sck-core-db"
+                "sck-core-db",
+                "sck-core-execute"
             ]
         },
         {
@@ -145,11 +146,9 @@
     ],
     "dependencies": {
         "python": "^3.12",
-        "boto3": ">=1.35.93",
-        "botocore": ">=1.35.93",
+        "boto3": ">=1.40.11",
+        "botocore": ">=1.40.11",
         "netaddr": "^1.3.0",
-        "pyyaml": "^6.0.2",
-        "pyyaml-include": "^2.1",
         "filters": "^1.3.2",
         "deepdiff": "^7.0.1",
         "jinja2": "^3.1.4",
@@ -185,10 +184,9 @@
         "pytest-html": "^4.0.0",
         "pytest-dotenv": "^0.5.2",
         "pytest-asyncio": "^0.25.0",
-        "boto3-stubs": ">=1.35.93",
-        "botocore-stubs": ">=1.35.93",
+        "boto3-stubs": ">=1.40.11",
+        "botocore-stubs": ">=1.40.11",
         "pylance": "^0.21.0",
-        "types-pyyaml": "^6.0.12.20240917",
         "types-jmespath": "^1.0.2.20240106",
         "types-python-dateutil": "^2.9.0.20241206",
         "types-netaddr": "^1.3.0.20240530",

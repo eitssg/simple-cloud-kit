@@ -9,9 +9,7 @@ if (-not (Test-Path -Path "./build-all.ps1" -PathType Leaf)) {
 # Function to build and package a project
 function Build-AppComponent {
     param (
-        [string]$project,
-        [string]$type,
-        [string]$version
+        [string]$project
     )
 
     # Save the original directory
@@ -31,7 +29,7 @@ function Build-AppComponent {
         Write-Host "Building $project"
         Write-Host "--------------------------------------------"
 
-        . ..\build-module.ps1 -type $type
+        . ..\build-module.ps1
 
     }
     catch {
@@ -61,14 +59,6 @@ function Build-AllComponents {
 $projects = @(
     "sck-core-framework"
     "sck-core-db"
-)
-
-Build-AllComponents -type "app" -version "3.12.4" -projects $projects
-
-# Initialize a variable with a list of folders for Lambda projects
-# core-lambda-api is dependent on the core-framework so use the same python version.  AWS maximum lambda runtime is "python3.12"
-
-$lambdaProjects = @(
     "sck-core-execute",
     "sck-core-report",
     "sck-core-runner"
@@ -78,16 +68,9 @@ $lambdaProjects = @(
     "sck-core-organization",
     "sck-core-api",
     "sck-core-codecommit"
-)
-
-Build-AllComponents -type "lambda" -version "3.12.4" -projects $lambdaProjects
-
-# Initialize a variable with a list of folders for regular projects
-$projects = @(
     "sck-core-cli",
     "sck-core-docs"
 )
 
-# Build all command-line apps and modules with python 3.12.4.  There are only 2 "command line" executable
-# sck-mod-core and docs.  sck-mod-core command is "core", and docs command is "core-docs"
-Build-AllComponents -type "app" -version "3.12.4" -projects $projects
+Build-AllComponents -projects $projects
+
