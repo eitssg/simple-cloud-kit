@@ -41,19 +41,6 @@ function Build-AppComponent {
     }
 }
 
-# Function to build all components
-function Build-AllComponents {
-    param (
-        [string]$type,
-        [string]$version,
-        [string[]]$projects
-    )
-
-    foreach ($p in $projects) {
-        Build-AppComponent -project $p -type $type -version $version
-    }
-}
-
 # Initialize a variable with a list of folders for regular projects.  The lambda functions are depnedent on the core-framework
 # so use the same python version.  AWS maximum lambda runtime is "python3.11"
 $projects = @(
@@ -72,5 +59,7 @@ $projects = @(
     "sck-core-docs"
 )
 
-Build-AllComponents -projects $projects
+foreach ($p in $projects) {
+    Build-AppComponent -project $p
+}
 

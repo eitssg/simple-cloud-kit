@@ -9,9 +9,6 @@ fi
 # Function to build and package a project
 Build_AppComponent() {
     local project=$1
-    local type=$2
-    local version=$3
-    local clean=$4
 
     # Save the original directory
     local mainDir=$(pwd)
@@ -29,42 +26,19 @@ Build_AppComponent() {
     echo "Building $project"
     echo "--------------------------------------------"
 
-    echo "We want python $version"
-    pyenv local $version
-    echo "Active python version is: $(python --version)"
-
-    source ../build-module.sh -type "$type" -version "$version" "--clean"
+    source ../build-module.sh
 
     # Return to the original directory
     cd "$mainDir"
 }
 
-# Function to build all components
-Build_AllComponents() {
-    local type=$1
-    local version=$2
-    shift 2
-    local projects=("$@")
-
-    for project in "${projects[@]}"; do
-        Build_AppComponent "$project" "$type" "$version" "$clean"
-    done
-}
-
 # Initialize a variable with a list of folders for regular projects. The lambda functions are dependent on the core-framework
 # so use the same python version. AWS maximum lambda runtime is "python3.12"
-core_projects=(
+projects=(
     "sck-core-framework"
     "sck-core-db"
-)
-
-Build_AllComponents "app" "3.13.2" "${core_projects[@]}"
-
-# Initialize a variable with a list of folders for Lambda projects
-# core-lambda-api is dependent on the core-framework so use the same python version. AWS maximum lambda runtime is "python3.12"
-lambdaProjects=(
-    "sck-core-report"
     "sck-core-execute"
+    "sck-core-report"
     "sck-core-runner"
     "sck-core-component"
     "sck-core-deployspec"
@@ -72,16 +46,10 @@ lambdaProjects=(
     "sck-core-organization"
     "sck-core-api"
     "sck-core-codecommit"
-)
-
-Build_AllComponents "lambda" "3.13.2" "${lambdaProjects[@]}"
-
-# Initialize a variable with a list of folders for regular projects
-cli_projects=(
     "sck-core-cli"
     "sck-core-docs"
 )
 
-# Build all command-line apps and modules with python 3.12.4. There are only 2 "command line" executable
-# sck-mod-core and docs. sck-mod-core command is "core", and docs command is "core-docs"
-Build_AllComponents "app" "3.13.2" "${cli_projects[@]}"
+for project in "${projects[@]}"; do
+    Build_AppComponent "$project"
+done

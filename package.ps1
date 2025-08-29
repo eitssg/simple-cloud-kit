@@ -24,8 +24,9 @@ if (-not (Test-Path -Path ".\.venv" -PathType Container)) {
     python -m pip install -q --upgrade pip
     python -m pip install -q poetry poetry-dynamic-versioning
 }
-
-. .\.venv\Scripts\Activate.ps1
+else {
+    . .\.venv\Scripts\Activate.ps1
+}
 
 # if the virtual environmewnt is not activated, activate it
 if (-not $env:VIRTUAL_ENV) {
@@ -47,7 +48,7 @@ $version = (poetry version -s)
 
 Write-Host "`n---- PACKAGING project: $packageName v${version} for Lambda`n"
 
-# Remove the dist folder if it exists
+# If the dist folder doesn't exist, exit
 if (-not (Test-Path -Path "dist" -PathType Container)) {
     Write-Host "The dist folder does not exist.  You must build the project first."
     exit 1

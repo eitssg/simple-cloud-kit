@@ -24,15 +24,17 @@ if (-not (Test-Path -Path ".\.venv" -PathType Container)) {
     python -m pip install -q --upgrade pip
     python -m pip install -q poetry poetry-dynamic-versioning
 }
+else {
+    . .\.venv\Scripts\Activate.ps1
+}
 
-. .\.venv\Scripts\Activate.ps1
-
-# if the virtual environmewnt is not activated, activate it
+# if the virtual environment is not activated, activate it
 if (-not $env:VIRTUAL_ENV) {
     Write-Host "Cannot activate virtual environment..."
     exit 1
 }
 
+# Check if the virtual environment is activated and show only the version and source folder and do not show titles
 Write-Host "`n---- Python version and source folder"
 $pythonCommand = Get-Command python
 $pythonCommand | Select-Object -Property Version, Source | Format-List | Out-String -Stream | Select-String -Pattern "Version|Source"
@@ -52,16 +54,26 @@ if (Test-Path -Path "dist" -PathType Container) {
     Remove-Item -Path "dist" -Recurse -Force
 }
 
-# Ensure substituion for dynamic versioning are executed
+# Remove the build folder if it exists
+if (Test-Path -Path "build" -PathType Container) {
+    Remove-Item -Path "build" -Recurse -Force
+}
+
+# You might ask why I'm running "poetry-dynamic-versioning".  Well, for some reason, the versioning is not working
+# as expected with 'poetry build' and the version number is not being updated in the files indicated in the
+# pyproject.toml file replacements section.
+# But, I found that manually running the "poetry-dynamic-versioning" command will update the version number in the files.
+# (my setup seems to be 'non-standard' and I'm not sure why it's not working as expected)
 poetry-dynamic-versioning
 
 Write-Host "`n---- Installing the project and depndencies using Poetry"
 
+# Remove all the *.egg-info folders and poetry lock
 Remove-Item -Path "poetry.lock" -Force -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force build, dist, *.egg-info -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force *.egg-info -ErrorAction SilentlyContinue
 
+# install project dependencies
 poetry install
-poetry run pip uninstall -y ruamel.yaml.clib # can't run on aws lambda, so remove it
 
 Write-Host "`n---- Building the distribution files for project: $packageName v${version}`n"
 
@@ -86,7 +98,7 @@ Get-ChildItem -Path "dist" -File | ForEach-Object {
     $destinationPath = Join-Path -Path $distPath -ChildPath $_.Name
     Copy-Item -Path $_.FullName -Destination $destinationPath -Force
 }
-Write-Host "`n---- Distribution files moved to $distPath"
+Write-Host "`n---- Distribution files copied to $distPath"
 Write-Host "`n---- Build complete for project: $packageName v${version}"
 
 # if the file .lambda exists then execute package.ps1 script

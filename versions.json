@@ -1,6 +1,6 @@
 {
     "project": {
-        "version": "0.0.10",
+        "version": "0.1.1",
         "description": "This is the version of the singtel-cloud-kit project",
         "develop": true
     },
@@ -157,7 +157,7 @@
         "requests": "^2.32.3",
         "ruamel-yaml": "^0.18.10",
         "cfnresponse": ">=1.1.4",
-        "cryptography": "^42.0.8",
+        "cryptography": ">=45.0.0",
         "argcomplete": ">=3.3.0",
         "python-dateutil": ">=2.9.0.post0",
         "s3transfer": ">=0.10.1",
