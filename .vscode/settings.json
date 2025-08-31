@@ -13,5 +13,6 @@
             "cloudformation*.yaml",
             "*.cfn.yaml"
         ]
-    }
+    },
+    "iis.configDir": ""
 }
