@@ -14,5 +14,39 @@
             "*.cfn.yaml"
         ]
     },
-    "iis.configDir": ""
+    "iis.configDir": "",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.venv": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+       "sck-core-*/": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/.vscode": true,
+        "**'.venv": true,
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+       "sck-core-*/": true
+    },
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/.hg/store/**": true,
+        "**/.venv/**": true,
+        "**/node_modules/**": true,
+        "**/bower_components/**": true,
+        "**/dist/**": true,
+        "**/build/**": true,
+       "sck-core-*/": true
+    }
 }
