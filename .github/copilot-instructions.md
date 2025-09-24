@@ -110,7 +110,7 @@ CLI/UI → core-invoker → core-runner → [core-deployspec, core-component]
 ### API Response Standards
 **Non-OAuth endpoints:**
 ```json
-{ "status": "success", "code": 200, "data": {...}, "metadata": {...}, "message": "..." }
+{ "status": "success", "code": 200, "data": {...}, "metadata": {...}, "message": "...", "errors": [...], "links": {...} }
 ```
 **OAuth endpoints:** Follow RFC 6749
 
@@ -118,6 +118,26 @@ CLI/UI → core-invoker → core-runner → [core-deployspec, core-component]
 - **Python 3.12** (development), **Python 3.11** (AWS Lambda runtime limit)
 - **Poetry** for all Python packages with `poetry-dynamic-versioning`
 - **Core framework dependency order**: `sck-core-framework` must build first (base for all others)
+
+### Core Modules Overview
+- **Modules**: 
+   - Use `core_framework`, `core_logging`, `core_db`, `core_api`.
+     - core_framework: tools for configuration values, environment variables, framework data models, constants, yaml/json helpers.
+     - core_logging: structured logging, log levels, correlation IDs. PRN identity and object formatter outputs
+     - core_helper.aws: AWS helpers (S3, Lambda, SNS, SQS, STS, IAM).
+       - Avoid `boto3`/`botocore` directly; use `core_helper.aws`.
+     - core_helper.magic: MagicS3Bucket.  Tools that allow AWS interface into local storage volumes or S3/Lambda based on core_framework.util.is_local_mode()
+     - core_renderer: Jinja2 filters and template rendering helpers.
+     - core_db: Database interface and models, DynamoDB/PynamoDB helpers. 
+     - core_execute: Lambda step-function. Defines Actions, ActionResources, and ActionSpec and the Action script library for running code within lambda step functions.  
+     - core_report: Pulls status from Action context and responds with a run status for hooks into CI/CD
+     - core_runner: Lambda function for kicking off core_execute step functions.  In local mode, calls core_execute directly and wraps execute in local thread for step-function simulation.
+     - core_deployspec: Lambda function generates, Compiles, Jinja2 transforms ActionsReources into a list of ActoinResources/ActionSpecs for core_execute. In local mode, reads/writes from local filesystem paths via MagicS3Bucket.
+     - core_component: Lambda function for managing components (packages, files, artefacts) in S3 and DynamoDB.  Compiles Core-Automation component resources into a CloudFormation template and provides ActionResources for core_execute. In local mode, stores/retrieves from local filesystem paths via MagicS3Bucket.
+     - core_invoker: Lambda function for invoking other lambda functions with retries and error handling. In local mode, calls core_runner, core_deployspec, core_component directly.
+     - core_organization: Lambda function for managing AWS Organizations, SCPs, and Accounts.
+     - core_codecommit: Lambda function for listening to AWS CodeCommit events (to kick off Core Automation pipeline).
+     - core_api: AWS API Gateway (remote operation) and FastAPI (local dev). Full API and execution of business logic.  In local mode, calls core_invoker directly and implements FastAPI interface.
 
 ## Development Environment Setup
 
