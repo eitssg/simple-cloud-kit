@@ -14,16 +14,16 @@ sck-core-invoker
 sck-core-organization
 sck-core-report
 sck-core-runner
-sck-core-ui)
+sck-core-ui
+sck-core-ai)
+
+BRANCH=develop
 
 for B in $A; do
   echo $B
   cd $B
-  git checkout main
-  git pull 
+  git checkout $BRANCH
+  git pull
   git pull --tags
-  git branch develop
-  git checkout develop
-  git push -u origin develop
   cd ..
 done

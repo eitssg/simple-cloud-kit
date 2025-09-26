@@ -49,3 +49,6 @@
 [submodule "sck-core-docker-server"]
 	path = sck-core-docker-server
 	url = https://github.com/eitssg/sck-core-docker-server.git
+[submodule "sck-core-ai"]
+	path = sck-core-ai
+	url = https://github.com/eitssg/sck-core-ai.git
