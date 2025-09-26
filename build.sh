@@ -15,6 +15,12 @@ if [ ! -f "./pyproject.toml" ]; then
     exit 1
 fi
 
+if [ "$NEW" == "1" ]; then
+    rm .python-version
+    echo "Removing virtual env"
+    rm -rf .venv
+fi
+
 # if the .venv folder does not exist, create it
 if [ ! -d ".venv" ]; then
     python -m venv .venv
@@ -73,7 +79,12 @@ rm -f poetry.lock
 rm -rf *.egg-info
 
 # Install project dependencies
-poetry install
+if [ "$DEV" == "1" ]; then
+   echo "Installing with DEVELOPMENT tools"
+   poetry install --with=dev
+else
+   poetry install
+fi
 
 echo -e "\n---- Building the distribution files for project: $packageName v${version}"
 

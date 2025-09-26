@@ -1,2 +1,5 @@
 tomlkit
 black
+pytest
+poetry
+poetry-dynamic-versioning
