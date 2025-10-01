@@ -20,13 +20,10 @@ if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
 if (-not (Test-Path -Path ".\.venv" -PathType Container)) {
     Write-Host "Creating virtual environment..."
     python -m venv .\.venv
-    . .\.venv\Scripts\Activate.ps1
-    python -m pip install -q --upgrade pip
-    python -m pip install -q poetry poetry-dynamic-versioning
 }
-else {
-    . .\.venv\Scripts\Activate.ps1
-}
+
+. .\.venv\Scripts\Activate.ps1
+
 
 # if the virtual environment is not activated, activate it
 if (-not $env:VIRTUAL_ENV) {
@@ -41,8 +38,7 @@ $pythonCommand | Select-Object -Property Version, Source | Format-List | Out-Str
 
 # Check if poetry is installed
 if (-not (Get-Command poetry -ErrorAction SilentlyContinue)) {
-    Write-Host "Poetry is not installed. Installing it."
-    python -m pip install -q poetry poetry-dynamic-versioning
+    Write-Host "Poetry is not installed. You must install it in the global python environment."
 }
 
 $version = (poetry version -s)
@@ -62,18 +58,20 @@ if (Test-Path -Path "build" -PathType Container) {
 # You might ask why I'm running "poetry-dynamic-versioning".  Well, for some reason, the versioning is not working
 # as expected with 'poetry build' and the version number is not being updated in the files indicated in the
 # pyproject.toml file replacements section.
+
 # But, I found that manually running the "poetry-dynamic-versioning" command will update the version number in the files.
 # (my setup seems to be 'non-standard' and I'm not sure why it's not working as expected)
+poetry self update
+
 poetry-dynamic-versioning
 
 Write-Host "`n---- Installing the project and depndencies using Poetry"
 
 # Remove all the *.egg-info folders and poetry lock
 Remove-Item -Path "poetry.lock" -Force -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force *.egg-info -ErrorAction SilentlyContinue
 
 # install project dependencies
-poetry install
+poetry sync --with=dev
 
 Write-Host "`n---- Building the distribution files for project: $packageName v${version}`n"
 

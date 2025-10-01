@@ -1,0 +1,42 @@
+[project]
+name = "simple-cloud-kit"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12.9"
+dependencies = [
+    "tomlkit",
+    "black",
+    "pytest",
+    "esbonio"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["simple_cloud_kit"]
+
+
+[tool.black]
+line-length = 132
+target-version = ["py311"]
+skip-string-normalization = true
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | build
+  | dist
+  | venv
+  | \.venv
+)/
+'''
+extend-exclude = '''
+/(
+    tests
+)/
+'''
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+

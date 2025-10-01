@@ -29,7 +29,9 @@ def ensure_git_tag_exists(module: str, data: dict):
 
             # Commit all changes
             subprocess.run(["git", "add", "--all"], check=True)
-            subprocess.run(["git", "commit", "-m", f"Version {project_version}"], check=True)
+            subprocess.run(
+                ["git", "commit", "-m", f"Version {project_version}"], check=True
+            )
 
             # push the changes
             subprocess.run(["git", "push"], check=True)
@@ -38,7 +40,9 @@ def ensure_git_tag_exists(module: str, data: dict):
 
         # check if the git tag exists
         # get all of the git tags into a result
-        result = subprocess.run(["git", "tag", "-l"], capture_output=True, text=True, check=True)
+        result = subprocess.run(
+            ["git", "tag", "-l"], capture_output=True, text=True, check=True
+        )
         git_tags = result.stdout.splitlines()
 
         if git_tag in git_tags:
@@ -148,10 +152,16 @@ def update_toml_dependencies(module: str, data: dict):
 
 def load_requirement() -> dict:
 
-    if not os.path.exists("versions.json"):
+    versions_file = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "data", "versions.json"
+    )
+
+    print(f"Loading {versions_file}")
+
+    if not os.path.exists(versions_file):
         raise Exception("No versions.json file found")
 
-    with open("versions.json", "r") as f:
+    with open(versions_file, "r") as f:
         return json.loads(f.read())
 
 

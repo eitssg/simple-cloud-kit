@@ -25,4 +25,4 @@ if (-not (Test-Path -Path "./.env" -PathType Leaf)) {
     Add-Content -Path ".env" -Value "LOG_LEVEL=DEBUG"
 }
 
-poetry run pytest
+uv run pytest

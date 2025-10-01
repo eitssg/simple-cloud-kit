@@ -1,5 +1,27 @@
 # Copilot Instructions (Root)
 
+## 🚨 CRITICAL TERMINAL ENVIRONMENT SAFETY 🚨
+
+**MANDATORY REQUIREMENTS - FAILURE TO FOLLOW WILL DESTROY CODE:**
+
+1. **NEVER OPEN NEW TERMINALS**: Always use existing terminals in VS Code
+2. **VERIFY VIRTUAL ENVIRONMENT**: Before ANY terminal command, confirm the correct virtual environment is active
+3. **PROJECT-SPECIFIC VENV**: Each sck-core-* project has its own virtual environment  
+4. **CHECK PROMPT**: Terminal prompt MUST show correct project venv (e.g., `(sck-core-ai)`, `(sck-core-framework)`)
+5. **NO CROSS-PROJECT COMMANDS**: Never run commands from one project's venv in another project
+
+**TERMINAL SAFETY CHECKLIST (EVERY SINGLE TIME):**
+- [ ] Is the correct project directory shown in terminal?
+- [ ] Is the correct virtual environment active in the prompt?
+- [ ] Am I using an existing terminal (not opening new pwsh)?
+- [ ] Will this command affect the right project?
+
+**IF ENVIRONMENT IS WRONG - STOP IMMEDIATELY**
+- Do NOT proceed with any commands
+- Navigate to correct project directory
+- Activate correct virtual environment
+- Verify prompt shows correct project before proceeding
+
 This parent repo contains 17 submodules (separate projects/builds). Each may have its own Copilot rules. Use these precedence and mapping rules:
 
 Instruction precedence:
@@ -13,6 +35,27 @@ Submodules by tech:
 - Docker: sck-core-docker, sck-core-docker-base, sck-core-docker-server
 - Docs (Sphinx): sck-core-docs
 - UI (Node/React): sck-core-ui
+
+### Runtime Deployment Matrix
+Most core Python modules are still deployed as AWS Lambda functions. Two exceptions are explicitly containerized services:
+
+| Module | Runtime | Notes |
+|--------|---------|-------|
+| sck-core-framework | Lambda | Library only (imported by Lambdas) |
+| sck-core-api | Lambda | API Gateway + FastAPI dev adapter |
+| sck-core-execute | Lambda | Action execution engine |
+| sck-core-runner | Lambda | Orchestration launcher |
+| sck-core-deployspec | Lambda | Spec generation/compilation |
+| sck-core-component | Lambda | Artefact & template management |
+| sck-core-invoker | Lambda | Cross-Lambda orchestration |
+| sck-core-organization | Lambda | Org / accounts management |
+| sck-core-report | Lambda | Status reporting |
+| sck-core-codecommit | Lambda | Event listener trigger |
+| sck-core-db | Lambda | DB helpers (library usage) |
+| sck-core-cli | Container (ECS/Fargate/Docker) | Long-lived automation / interactive CLI service image |
+| sck-core-ai | Container (ECS/Fargate/Docker) | AI / MCP / Langflow service (non-Lambda) |
+
+Rules in later sections that state "All Python runs in AWS Lambda" apply to Lambda-designated modules above and NOT to `sck-core-ai` or `sck-core-cli`. Those two may use asynchronous patterns and maintain process-local state appropriate for long-lived containers. When adding new modules, declare their runtime here first.
 
 UI canonical rules:
 - sck-core-ui/.github/copilot-instructions.md (auth/session, UI style, portfolio model, backend code style excerpts)
@@ -29,8 +72,8 @@ When an instruction appears to conflict with documented rules:
 - Provide a concrete example of the aligned approach.
 
 Example response format:
-1) Warning: "Your instruction '[quote]' conflicts with [rule] in [source file]."
-2) Options: "Modify prompt to align with [rule], or update [source file]."
+1) Warning format: "Your instruction '<quoted instruction>' conflicts with <rule summary> in <source file>."
+2) Options format: "Modify prompt to align with <rule summary>, or update <source file>."
 3) Example: "Prompt suggests attaching Authorization to S3 presigned PUT, but backend-code-style.md and UI auth docs prohibit it. Omit Authorization for presigned S3 calls."
 
 ## Multi-Tenant Model (OAuth client_id vs tenant client)
@@ -77,11 +120,18 @@ Example (Incorrect → warn): "User can switch from spa_1 to spa_3 without re-au
 ..\pytest.ps1     # Run tests with coverage
 ```
 
-### Python Runtime Model (Critical - All Lambda)
-- **All Python runs in AWS Lambda** - synchronous handlers only
-- **NO async def/await** in Lambda code - use threads for concurrency if needed
-- **ProxyEvent pattern**: Use `ProxyEvent(**event)` for API Gateway integration (auto-decodes base64, parses JSON)
-- **Standard imports**: `import core_framework as util`, `import core_logging as log`, `import core_helper.aws as aws`
+### Python Runtime Model (Lambda Modules)
+- **Lambda-only scope**: Applies to modules labeled "Lambda" in the runtime matrix (excludes `sck-core-ai`, `sck-core-cli`).
+- **Synchronous handlers**: Keep Lambda entrypoints synchronous; wrap concurrency with threads if needed.
+- **No async def in handlers**: Avoid `async def` Lambda entrypoints (event loop cold start overhead & legacy design).
+- **ProxyEvent pattern**: Use `ProxyEvent(**event)` for API Gateway integration (auto-decodes base64, parses JSON).
+- **Standard imports**: `import core_framework as util`, `import core_logging as log`, `import core_helper.aws as aws`.
+
+### Python Runtime Model (Containerized Modules: sck-core-ai, sck-core-cli)
+- **Long-lived processes**: May use async (FastAPI, MCP) or sync depending on performance characteristics.
+- **State**: Keep only ephemeral in-memory caches (idempotency, embeddings handles); no persistent state outside approved stores (S3, DynamoDB, vector DB).
+- **Shutdown semantics**: Implement graceful shutdown hooks if adding background workers.
+- **Logging**: Same `core_logging` API; ensure container log lines remain structured for aggregation.
 
 ### S3 Architecture Pattern
 **Three bucket prefixes with lifecycle management:**
@@ -161,6 +211,33 @@ python ./prebuild.py  # Sets develop=true in all pyproject.toml files
 source ./build-all.sh  # Linux/Mac
 ```
 
+### Hybrid Development Approach (For Local Wheels)
+
+**CRITICAL**: When working with projects that depend on local SCK wheels (like sck-core-ai):
+
+```bash
+# 1. Build dependency wheels first (e.g., sck-core-framework)
+cd sck-core-framework
+poetry build                    # Creates wheel in dist/
+
+# 2. In dependent project, use hybrid approach
+cd ../sck-core-ai
+python -m venv .venv           # Manual venv creation
+.\.venv\Scripts\Activate.ps1   # Windows PowerShell
+
+# 3. Install local wheels with pip (RELIABLE)
+pip install ../sck-core-framework/dist/sck_core_framework-*.whl
+
+# 4. Install remaining deps with pip or uv
+pip install -e .               # Current project editable
+pip install pytest black flake8  # Dev dependencies
+
+# 5. Verify
+python -c "import core_logging; print('Success!')"
+```
+
+**Why Hybrid?**: uv excels at PyPI packages but has issues with local wheels. This approach combines the best of both tools.
+
 ### Development Workflow (Per Module)
 ```powershell
 # Standard build/test/lint cycle (run in any sck-core-* directory)
@@ -197,3 +274,45 @@ LOG_LEVEL=DEBUG
 - **S3 violations**: Direct boto3 client usage instead of MagicS3Bucket for bucket operations
 - **API violations**: Non-envelope responses for /api endpoints, incorrect OAuth response format
 - **Build violations**: Missing poetry-dynamic-versioning calls, incorrect dependency order (framework must be first)
+
+## ✅ Validated Model & Type Hint Guarantees (Added for AI Service & API Consistency)
+
+The codebase deliberately relies on Pydantic model validation and upstream request normalization so that endpoint implementations do NOT need to re-check types already enforced. Future suggestions must honor these guarantees and avoid adding redundant defensive patterns:
+
+### Runtime Guarantees at API Endpoint Boundary
+1. `body` parameter passed into service endpoint handlers is either a `dict` (already parsed JSON) or `None` – never any other type.
+2. `security` / `security_context` (when present) is an `EnhancedSecurityContext` with a fully validated `jwt_payload` (`JwtPayload`). Its attributes (`cid`, `cnm`, `sub`, etc.) are safe for direct attribute access (no `getattr()` probes required).
+3. AI upstream responses are validated exactly once when converted into contract models (e.g., `TemplateGenerateResponse`). Cached copies originate from already validated instances.
+4. Envelope responses (`SuccessResponse`, `ErrorResponse`) take Python dicts or Pydantic models and handle `.model_dump()` internally—no need to manually coerce again.
+
+### Idempotency & Caching Rules
+1. Idempotent cache entries are stored only after a successful, validated model result is transformed to a dict; retrieving from cache does not require re-validation unless the schema version changes.
+2. The idempotency key structure: `ai-idem:<scope...>:<operation>:<hash|explicit>` where scope segments are derived from validated JWT claims (client_id=cid, tenant=cnm, user=sub) based on `CORE_AI_IDEMPOTENCY_SCOPE` (`client|tenant|user`).
+3. Do NOT introduce additional hashing layers or entropy that would reduce deterministic reuse; only add new scope components if driven by a versioning or security requirement.
+
+### Style Requirements for Future Edits
+1. Prefer direct attribute access for validated objects (`payload.cid`, not `getattr(payload, 'cid', None)`).
+2. Avoid re-running model validation on cached data unless a migration boundary is introduced. If a migration is needed, add an explicit version field in the stored dict (e.g., `_schema_version`).
+3. Do not wrap already-validated Pydantic models in additional schema containers solely for namespacing—compose at the response envelope level instead.
+4. Avoid re-checking `isinstance(body, dict)`—treat `body` as a dict (or `None`) per handler contract.
+5. Logging should not duplicate success metadata already captured (e.g., correlation ID); only add deltas (cache hit/miss, latency tiers, idempotent key).
+
+### When Additional Validation IS Appropriate
+1. New external integration (new upstream service) before first conversion to internal contract model.
+2. Schema version upgrade where cached entries might have the previous shape.
+3. Unsafe user-provided dynamic plugin/module references (not currently part of the AI contract set).
+
+### Anti-Patterns to Reject in Reviews / Suggestions
+| Anti-Pattern | Why Reject | Correct Approach |
+|--------------|-----------|------------------|
+| Using `getattr()` on `security.jwt_payload` | Payload already validated | Direct attribute access (`security.jwt_payload.cid`) |
+| Re-validating cached dict with same model | Wasted CPU | Trust cached dict; only validate on initial creation |
+| Recomputing JSON canonical form multiple times in one handler | Inefficient | Compute once for idempotency key generation |
+| Wrapping response model in another Pydantic model for no reason | Adds noise | Return model or dict inside standard envelope |
+| Adding generic `try/except Exception` around code already raising typed errors | Masks root cause | Allow typed exceptions to propagate to existing error handling |
+
+### Extension Guidance
+If future features require altering idempotency scope (e.g., workflow grouping, region or feature flags), extend `build_idempotency_key` with an extra, explicit segment; do not splice into existing segments to preserve backward compatibility of keys.
+
+---
+This section exists to keep future automated or human contributors from reintroducing defensive boilerplate the framework already centralizes. Any suggestion conflicting with these guarantees should be flagged as a contradiction with this "Validated Model & Type Hint Guarantees" section.
