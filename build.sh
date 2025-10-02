@@ -24,12 +24,9 @@ fi
 # if the .venv folder does not exist, create it
 if [ ! -d ".venv" ]; then
     python -m venv .venv
-    source .venv/bin/activate
-    python -m pip install --upgrade pip
-    python -m pip install --upgrade poetry poetry-dynamic-versioning polib
-else
-    source .venv/bin/activate
 fi
+
+source .venv/bin/activate
 
 # check if virtual environment is activated and if not fail with an error
 if [ -z "$VIRTUAL_ENV" ]; then
@@ -45,13 +42,7 @@ pythonSource=$(dirname "$pythonCommand")
 echo "Version: $pythonVersion"
 echo "Source: $pythonSource"
 
-# Check if poetry is installed
-if ! command -v poetry &> /dev/null; then
-    echo "Poetry is not installed.  Installing it."
-    python -m pip install -q poetry poetry-dynamic-versioning polib
-fi
-
-version=$(poetry version | awk '{print $2}')
+version=$(uv version --short)
 
 echo -e "\n---- BUILDING project: $packageName v${version}"
 
@@ -65,25 +56,15 @@ if [ -d "build" ]; then
     rm -rf "build"
 fi
 
-# You might ask why I'm running "poetry-dynamic-versioning".  Well, for some reason, the versioning is not working
-# as expected with 'poetry build' and the version number is not being updated in the files indicated in the
-# pyproject.toml file replacements section.
-# But, I found that manually running the "poetry-dynamic-versioning" command will update the version number in the files.
-# (my setup seems to be 'non-standard' and I'm not sure why it's not working as expected)
-poetry-dynamic-versioning
+echo -e "\n---- Installing the project and depndencies using UV"
 
-echo -e "\n---- Installing the project and depndencies using Poetry"
-
-# remove all the *.egg-info folders and poetry lock
-rm -f poetry.lock
-rm -rf *.egg-info
 
 # Install project dependencies
 if [ "$DEV" == "1" ]; then
    echo "Installing with DEVELOPMENT tools"
-   poetry install --with=dev
+   uv sync --all-extras
 else
-   poetry install
+   uv sync
 fi
 
 echo -e "\n---- Building the distribution files for project: $packageName v${version}"

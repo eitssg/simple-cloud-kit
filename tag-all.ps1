@@ -42,7 +42,7 @@ foreach ($folder in $folders) {
     $packageName = (Get-Item -Path ".\").Name
 
     # get the version from the pyproject.toml file
-    $version = (poetry version -s)
+    $version = (uv version --short)
 
     # write the project name and version
     Write-Host "Checking project: $packageName v${version}"

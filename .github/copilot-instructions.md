@@ -115,7 +115,7 @@ Example (Incorrect → warn): "User can switch from spa_1 to spa_3 without re-au
 .\build-all.ps1
 
 # Individual Python submodule (from submodule directory)
-..\build.ps1      # Poetry venv, install deps, build package
+..\build.ps1      # uv venv, install deps, build package
 ..\flakeit.ps1    # Black formatting + flake8 linting  
 ..\pytest.ps1     # Run tests with coverage
 ```
@@ -166,7 +166,7 @@ CLI/UI → core-invoker → core-runner → [core-deployspec, core-component]
 
 ### Build Dependencies
 - **Python 3.12** (development), **Python 3.11** (AWS Lambda runtime limit)
-- **Poetry** for all Python packages with `poetry-dynamic-versioning`
+- **uv** All packages are uv with hatchling build engine 
 - **Core framework dependency order**: `sck-core-framework` must build first (base for all others)
 
 ### Core Modules Overview
@@ -199,11 +199,8 @@ source .venv/bin/activate  # Linux/Mac
 # OR
 .\.venv\Scripts\Activate.ps1  # Windows PowerShell
 
-# 2. Install Poetry and dynamic versioning
-pip install poetry poetry-dynamic-versioning
-
 # 3. Switch to develop mode (for local development)
-python ./prebuild.py  # Sets develop=true in all pyproject.toml files
+uv run ./prebuild.py  # Sets develop=true in all pyproject.toml files
 
 # 4. Build all submodules
 ./build-all.ps1  # Windows
@@ -218,7 +215,7 @@ source ./build-all.sh  # Linux/Mac
 ```bash
 # 1. Build dependency wheels first (e.g., sck-core-framework)
 cd sck-core-framework
-poetry build                    # Creates wheel in dist/
+uv build                    # Creates wheel in dist/
 
 # 2. In dependent project, use hybrid approach
 cd ../sck-core-ai
@@ -241,7 +238,7 @@ python -c "import core_logging; print('Success!')"
 ### Development Workflow (Per Module)
 ```powershell
 # Standard build/test/lint cycle (run in any sck-core-* directory)
-..\build.ps1      # Poetry install, dynamic versioning, build dist
+..\build.ps1      # uv install, dynamic versioning, build dist
 ..\flakeit.ps1    # Black formatting + flake8 linting (E9,F63,F7,F82 only)
 ..\pytest.ps1     # Run tests with coverage, auto-creates .env
 ..\publish.ps1    # Publish to Nexus repository (requires NEXUS_* env vars)
@@ -273,7 +270,6 @@ LOG_LEVEL=DEBUG
 - **Lambda violations**: Using async def/await in Lambda handlers, long-running synchronous operations
 - **S3 violations**: Direct boto3 client usage instead of MagicS3Bucket for bucket operations
 - **API violations**: Non-envelope responses for /api endpoints, incorrect OAuth response format
-- **Build violations**: Missing poetry-dynamic-versioning calls, incorrect dependency order (framework must be first)
 
 ## ✅ Validated Model & Type Hint Guarantees (Added for AI Service & API Consistency)
 

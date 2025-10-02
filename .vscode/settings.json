@@ -1,8 +1,21 @@
 {
     "yaml.customTags": [
-        "!Ref", "!GetAtt", "!Sub", "!Join", "!Select", "!Split",
-        "!Base64", "!If", "!Equals", "!And", "!Or", "!Not",
-        "!FindInMap", "!ImportValue", "!Condition", "!Transform"
+        "!Ref",
+        "!GetAtt",
+        "!Sub",
+        "!Join",
+        "!Select",
+        "!Split",
+        "!Base64",
+        "!If",
+        "!Equals",
+        "!And",
+        "!Or",
+        "!Not",
+        "!FindInMap",
+        "!ImportValue",
+        "!Condition",
+        "!Transform"
     ],
     "files.associations": {
         "**/platform/components/*.yaml": "yaml"
@@ -15,16 +28,16 @@
         ]
     },
     "iis.configDir": "",
-    "xxfiles.exclude": {
+    "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
         "**/.venv": true,
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-       "sck-core-*/": true
+        "xsck-core-*/": true
     },
-    "xxsearch.exclude": {
+    "search.exclude": {
         "**/node_modules": true,
         "**/bower_components": true,
         "**/dist": true,
@@ -36,9 +49,9 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-       "sck-core-*/": true
+        "xsck-core-*/": true
     },
-    "xxfiles.watcherExclude": {
+    "files.watcherExclude": {
         "**/.git/objects/**": true,
         "**/.git/subtree-cache/**": true,
         "**/.hg/store/**": true,
@@ -47,7 +60,7 @@
         "**/bower_components/**": true,
         "**/dist/**": true,
         "**/build/**": true,
-       "sck-core-*/": true
+        "xsck-core-*/": true
     },
     "python.testing.pytestArgs": [
         "."

@@ -419,6 +419,14 @@ Do something like above or similar.  Then you can run "core" from anywhere.  Eve
 
 ##### step 1
 
+Make sure UV is installed
+
+```bash
+wget -qO- https://astral.sh/uv/install.sh | sh
+```
+
+##### step 2
+
 Clone the repositry:
 
 ```bash
@@ -428,15 +436,6 @@ python -m venv .venv
 ```
 There are 14 git submodules in this repo.  Sync all the submodules and pull all the subprojects
 
-##### step 2
-
-In IntelliJ or VSCode, select this python as the interpreter.  
-
-install poetry
-```bash
-source .venv/bin/activate
-pip install poetry poetry-dynamic-versioning
-```
 
 Next, evaluate the build tool scripts for windows (.ps1) powershell, or mac/linux (.sh) bash (not zsh or sh...bash)
 

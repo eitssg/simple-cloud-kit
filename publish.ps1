@@ -16,15 +16,15 @@ if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
 
 }
 
-# if the dist folder is empty, return with error "No distribution files found. Run 'poetry build' to create them."
+# if the dist folder is empty, return with error "No distribution files found. Run 'uv build' to create them."
 if (-not (Test-Path -Path "./dist" -PathType Container) -or
     (-not (Get-ChildItem -Path "./dist" -File | Where-Object { $_.Name -match "\.whl$|\.tar\.gz$" }))) {
-    Write-Host "No distribution files found. Run 'poetry build' to create them."
+    Write-Host "No distribution files found. Run 'uv build' to create them."
     exit 1
 }
 
 # Set the URL for the nexus-releases repository
-poetry config repositories.nexus-releases $Env:NEXUS_SERVER/repository/pypi-releases/
+uv config repositories.nexus-releases $Env:NEXUS_SERVER/repository/pypi-releases/
 
 # Publish the package to PyPI repository
-poetry publish --repository nexus-releases -u $Env:NEXUS_USERNAME -p $Env:NEXUS_PASSWORD
+uv publish --repository nexus-releases -u $Env:NEXUS_USERNAME -p $Env:NEXUS_PASSWORD

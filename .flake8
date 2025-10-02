@@ -11,7 +11,8 @@ ignore =
     W503,
     E203,
     C901,  
-    F403
+    F403,
+    F401
 # Disable cyclomatic complexity check (handled via code review / targeted refactors)
 # Set the base directory for running flake8
 # By default, it's the current directory

@@ -1,7 +1,7 @@
 # Get the current folder name
 $packageName = (Get-Item -Path ".\").Name
 
-$version = (poetry version -s)
+$version = (uv version --short)
 
 Write-Host "`n---- TESTING project: $packageName v${version}"
 

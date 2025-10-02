@@ -3,7 +3,7 @@
 # Get the current folder name
 packageName=$(basename "$PWD")
 
-version=$(poetry version -s)
+version=$(uv version --short)
 
 echo -e "\n---- TESTING project: $packageName v${version}"
 
@@ -28,4 +28,4 @@ if [ ! -f "./.env" ]; then
     echo "LOG_LEVEL=DEBUG" >> .env
 fi
 
-poetry run pytest 
+uv run pytest

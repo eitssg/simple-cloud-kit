@@ -17,5 +17,5 @@ if (-not (Test-Path -Path ".\.venv" -PathType Container)) {
 # Simply run the pip requirements silently
 uv sync
 
-# This doesnot work.  we wrote it for poetry
-# python simple_cloud_kit\prebuild.py
+# This doesnot work.  we wrote it for uv
+# uv run simple_cloud_kit\prebuild.py

@@ -1,4 +1,4 @@
-# Finding the Python interpreter and building the project using Poetry
+# Finding the Python interpreter and building the project using UV
 $pythonCommand = Get-Command python
 
 # If the python interpreter is not found, return with error "Python interpreter not found. Please install Python."
@@ -16,7 +16,7 @@ if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
     exit 1
 }
 
-# if the virtual environment does not exist, return with error "Virtual environment does not exist. Run 'poetry install' to create it."
+# if the virtual environment does not exist, return with error "Virtual environment does not exist."
 if (-not (Test-Path -Path ".\.venv" -PathType Container)) {
     Write-Host "Creating virtual environment..."
     python -m venv .\.venv
@@ -36,12 +36,12 @@ Write-Host "`n---- Python version and source folder"
 $pythonCommand = Get-Command python
 $pythonCommand | Select-Object -Property Version, Source | Format-List | Out-String -Stream | Select-String -Pattern "Version|Source"
 
-# Check if poetry is installed
-if (-not (Get-Command poetry -ErrorAction SilentlyContinue)) {
-    Write-Host "Poetry is not installed. You must install it in the global python environment."
+# Check if uv is installed
+if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+    Write-Host "uv is not installed. You must install it in the global python environment."
 }
 
-$version = (poetry version -s)
+$version = (uv version --short)
 
 Write-Host "`n---- BUILDING project: $packageName v${version}"
 
@@ -55,27 +55,14 @@ if (Test-Path -Path "build" -PathType Container) {
     Remove-Item -Path "build" -Recurse -Force
 }
 
-# You might ask why I'm running "poetry-dynamic-versioning".  Well, for some reason, the versioning is not working
-# as expected with 'poetry build' and the version number is not being updated in the files indicated in the
-# pyproject.toml file replacements section.
-
-# But, I found that manually running the "poetry-dynamic-versioning" command will update the version number in the files.
-# (my setup seems to be 'non-standard' and I'm not sure why it's not working as expected)
-poetry self update
-
-poetry-dynamic-versioning
-
-Write-Host "`n---- Installing the project and depndencies using Poetry"
-
-# Remove all the *.egg-info folders and poetry lock
-Remove-Item -Path "poetry.lock" -Force -ErrorAction SilentlyContinue
+Write-Host "`n---- Installing the project and depndencies"
 
 # install project dependencies
-poetry sync --with=dev
+uv install --all-extras
 
 Write-Host "`n---- Building the distribution files for project: $packageName v${version}`n"
 
-poetry build
+uv build
 
 # Move the files from the dist folder to the folder ../sck-core-docker/dist and create the destination folder if necessary
 $distPath = "..\sck-core-docker\dist"

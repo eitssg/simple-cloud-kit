@@ -3,7 +3,7 @@
 # Get the current folder name
 packageName=$(basename "$PWD")
 
-version=$(poetry version -s)
+version=$(uv version --short)
 
 echo -e "\n---- LINTING project: $packageName v${version}"
 
@@ -13,6 +13,6 @@ if [ ! -f "./pyproject.toml" ]; then
     exit 1
 fi
 
-poetry run black .
+uv run black .
 
-poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics

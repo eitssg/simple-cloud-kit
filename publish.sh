@@ -18,7 +18,7 @@ if [ ! -f "./pyproject.toml" ]; then
 fi
 
 # Set the URL for the nexus-releases repository
-poetry config repositories.nexus-releases "$NEXUS_SERVER/repository/pypi-releases/"
+uv config repositories.nexus-releases "$NEXUS_SERVER/repository/pypi-releases/"
 
 # Publish the package to PyPI repository
-poetry publish --repository nexus-releases -u "$NEXUS_USERNAME" -p "$NEXUS_PASSWORD"
+uv publish --repository nexus-releases -u "$NEXUS_USERNAME" -p "$NEXUS_PASSWORD"

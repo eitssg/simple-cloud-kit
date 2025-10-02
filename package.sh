@@ -18,12 +18,9 @@ fi
 if [ ! -d ".venv" ]; then
    echo "Creating virtualenv"
    python -m venv .venv
-   source .venv/bin/activate
-   python -m pip install -q --upgrade pip
-   python -m pip install -q poetry poetry-dynamic-versioning polib
-else
-   source .venv/bin/activate
 fi
+
+source .venv/bin/activate
 
 # if not in virtual environment exit
 if [ -z "$VIRTUAL_ENV" ]; then
@@ -36,14 +33,8 @@ echo "---- Python version and source folder"
 python -V
 which python
 
-# Check if poetry is installed
-if ! command -v poetry &> /dev/null; then
-    echo "Poetry is not installed. Installing it."
-   python -m pip install -q poetry poetry-dynamic-versioning polib
-fi
-
-# Get the current version of the poetry version -s command
-version=$(poetry version -s)
+# Get the current version of the uv version --short command
+version=$(uv version --short)
 
 echo "\n---- PACKAGING project: $packageName v$version for Lambda ----"
 
@@ -60,8 +51,8 @@ fi
 
 echo "Packaging Lambda $packageName"
 
-# Get the current version of poetry version -s command
-version=$(poetry version -s)
+# Get the current version of the uv version --short command
+version=$(uv version --short)
 
 # Package Name
 artefactName="$packageName-$version.zip"
