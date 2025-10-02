@@ -29,7 +29,8 @@
             "name": "sck-core-report",
             "description": "A lambda function to inspect the task payload from the step-function",
             "dependsOn": [
-                "sck-core-framework"
+                "sck-core-framework",
+                "sck-core-db"
             ]
         },
         {

@@ -180,7 +180,7 @@ def update_project_dependencies(module: str, data: dict):
                 f"   Updating dependency: [bold red]{dependency}[/] [green]{installed_version}[/] to version ([green]{common_version}[/])...",
                 end="",
             )
-            # subprocess.run(f"uv -q add {dependency}@{common_version}", check=True)
+            subprocess.run(f"uv -q add {dependency} --bounds {common_version}", check=True)
             print(f"[bold green]done.[/]")
 
         print(f"[bold green]All dependencies updated.[/]")
@@ -243,7 +243,7 @@ def update_requirements():
     for module in modules_list:
         print(f"[green bold]Updating:[/] [white]{module}[/]")
         update_toml_dependencies(module, data)
-        # ensure_git_tag_exists(module, data)
+        ensure_git_tag_exists(module, data)
 
 
 def main():
