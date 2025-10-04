@@ -13,6 +13,8 @@ dependencies = [
     "pytest-cov>=7.0.0",
     "console>=0.9911",
     "rich>=14.1.0",
+    "cfn-lint>=1.40.0",
+    "pydot>=4.0.1",
 ]
 
 [tool.hatch.build.targets.wheel]

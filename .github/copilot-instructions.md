@@ -1,6 +1,38 @@
 # Copilot Instructions (Root)
 
-## 🚨 CRITICAL TERMINAL ENVIRONMENT SAFETY 🚨
+## � Plan → Approval → Execute Workflow (NEW – Mandatory)
+
+Effective immediately (per maintainer request), all non-trivial actions MUST follow this explicit workflow:
+
+1. Plan: Provide a concise, enumerated plan of intended actions (file reads, searches, edits, test runs, builds). Each step should map to a clear outcome.
+2. Await Approval: Do NOT execute tools, create, edit, or delete files until the user explicitly approves (e.g., "approved", "go", "proceed step 1", or selective step approvals). If the user approves only a subset, proceed only with those steps and re-present an updated plan for the remainder.
+3. Execute: After approval, carry out actions, batching related read-only steps where possible, then report deltas (what changed vs. the plan) before continuing.
+
+### Scope & Definitions
+- Trivial Q&A (purely explanatory answers, no code changes or repo-impacting suggestions) may skip the approval phase.
+- "Non-trivial" includes: modifying any repository file, generating patches, creating/deleting files or directories, running build/test/lint commands, or performing multi-step investigative searches whose output might bias subsequent changes.
+- If ambiguity exists (e.g., user asks a question that might imply edits), default to presenting a plan first.
+
+### Exceptions
+- Explicit user override: If the user states "skip plan" / "no plan" / "do it now", you may proceed directly, but still summarize what you did afterward.
+- Emergency fix: When immediately reverting a clearly broken earlier automated change in the same session (e.g., introduced syntax error blocking further assistance). Provide a one-line emergency plan, perform the minimal revert, then re-enter normal workflow.
+
+### Partial Approvals & Iteration
+- If the user approves only certain steps, execute those and then re-present a trimmed plan for the remaining pending steps.
+- If execution reveals new necessary steps (dependency, failing test, contradiction), pause and present an updated micro-plan for those additions before continuing.
+
+### Artifact Reporting
+After executing approved steps:
+- List: Files created/edited/deleted (paths + 1-line purpose).
+- Validation: Summaries of build/lint/test (PASS/FAIL + brief failure cause if any) when those steps were part of the plan.
+- Requirements Coverage: Map approved steps → completion status.
+
+### Conflict With Previous Guidance
+This workflow supersedes earlier proactive-execution language in local or submodule instructions. Other documents encouraging immediate action are now subordinate to this root policy unless explicitly overridden again by the maintainer.
+
+---
+
+## �🚨 CRITICAL TERMINAL ENVIRONMENT SAFETY 🚨
 
 **MANDATORY REQUIREMENTS - FAILURE TO FOLLOW WILL DESTROY CODE:**
 
