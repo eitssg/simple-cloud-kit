@@ -142,6 +142,13 @@ Example (Incorrect → warn): "User can switch from spa_1 to spa_3 without re-au
 ## Technical Architecture & Development Patterns
 
 ### Core Development Workflows
+### Import and YAML Parsing Policy (Global)
+- Do not wrap imports in try/except or use conditional imports. Imports must be unconditional and fail fast; if a dependency is needed, add it to the project.
+- For YAML parsing, prefer ruamel.yaml over PyYAML. Use a module-level YAML instance, for example:
+  - `from ruamel.yaml import YAML`
+  - `yaml = YAML(typ="safe")`
+  - Reuse this instance for all YAML load operations.
+
 ```powershell
 # Root monorepo - builds all 17 submodules in dependency order
 .\build-all.ps1
@@ -151,6 +158,15 @@ Example (Incorrect → warn): "User can switch from spa_1 to spa_3 without re-au
 ..\flakeit.ps1    # Black formatting + flake8 linting  
 ..\pytest.ps1     # Run tests with coverage
 ```
+
+### UV Command Formulation (Mandatory)
+- Always prefer uv for Python tooling and package management in commands:
+  - pip → `uv pip <args>`
+  - python → `uv python <args>`
+  - python -m <module> → `uv run -m <module> <args>`
+  - CLI tools (pytest/black/flake8/mypy/etc.) → `uv run <tool> <args>`
+- Applies equally on Windows PowerShell and POSIX shells.
+- Combine with terminal safety rules: use the existing terminal and do not attempt to activate environments—uv will resolve the project environment.
 
 ### Python Runtime Model (Lambda Modules)
 - **Lambda-only scope**: Applies to modules labeled "Lambda" in the runtime matrix (excludes `sck-core-ai`, `sck-core-cli`).
