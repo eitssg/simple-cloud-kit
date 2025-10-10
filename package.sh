@@ -1,4 +1,7 @@
+
 #!/bin/bash
+set -euo pipefail
+
 
 # if python cannot be found, exit
 if ! command -v python &> /dev/null; then
@@ -9,24 +12,35 @@ fi
 # Get the name of the current folder
 packageName=$(basename "$PWD")
 
+
 # if the file pyproject.toml does not exist, return with error "Must be in project folder":
 if [ ! -f "./pyproject.toml" ]; then
     echo "Must be in project folder"
     exit 1
 fi
 
+
+# Create venv with Python 3.12 if needed
 if [ ! -d ".venv" ]; then
    echo "Creating virtualenv"
    python -m venv .venv
 fi
-
 source .venv/bin/activate
+
+# After activation, ensure venv python is 3.12
+venv_py=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+if [[ "$venv_py" != "3.12" ]]; then
+    echo "Active venv is not Python 3.12 (got $venv_py). Aborting."
+    exit 1
+fi
+
 
 # if not in virtual environment exit
 if [ -z "$VIRTUAL_ENV" ]; then
    echo "Not in virtual environment"
    exit 1
 fi
+
 
 
 echo "---- Python version and source folder"
@@ -37,6 +51,7 @@ which python
 version=$(uv version --short)
 
 echo "\n---- PACKAGING project: $packageName v$version for Lambda ----"
+
 
 # If the dist folder doesn't exist, exit
 if [ ! -d "dist" ]; then
@@ -60,21 +75,32 @@ artefactName="$packageName-$version.zip"
 # Remove the artefact by packageName
 rm -f "${packageName}*.zip"
 
-# Find the .whl file in the dist folder
-whlFile=$(find dist -name "*.whl" | head -n 1)
 
+# Find the .whl file in the dist folder (prefer this project)
+whlFile=$(find dist -name "${packageName//-/_}-*.whl" | sort -r | head -n 1)
+if [ -z "$whlFile" ]; then
+    whlFile=$(find dist -name "*.whl" | sort -r | head -n 1)
+fi
 if [ -z "$whlFile" ]; then
     echo "No .whl file found in the dist folder."
-    return 0
+    exit 1
 fi
 
-echo "Installing $whlFile into the package folder"
-pip install --upgrade -t package "$whlFile"
+
+echo "Installing $whlFile and all runtime dependencies into the package folder"
+pip -q install -t package "$whlFile"
+
 
 if [ -d "package" ]; then
     cd package
-    # brew install p7zip
-    7z a -bd -bb0 "../$artefactName" . -xr"!*.pyc" > /dev/null 2>&1
+    if command -v 7z >/dev/null 2>&1; then
+        7z a -bd -bb0 "../$artefactName" . -xr"!*.pyc" > /dev/null 2>&1
+    elif command -v zip >/dev/null 2>&1; then
+        zip -r -q "../$artefactName" . -x '*.pyc' '__pycache__/*'
+    else
+        echo "Neither 7z nor zip is available for packaging. Please install one."
+        exit 1
+    fi
     cd ..
     rm -rf "package"
 
@@ -85,11 +111,8 @@ if [ -d "package" ]; then
         mkdir -p "$destinationFolder"
     fi
 
-    # if any file begins with the prefix $packageName and ends with .zip, remove it
-    existingFiles=$(find "$destinationFolder" -name "$packageName*.zip")
-    if [ ! -z "$existingFiles" ]; then
-        rm -f $existingFiles
-    fi
+    # Remove old artefacts for this package
+    rm -f $destinationFolder/${packageName}*.zip
 
     # Move the artefact to the destination folder
     mv "$artefactName" "$destinationFolder"
