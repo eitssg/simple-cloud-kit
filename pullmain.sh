@@ -1,5 +1,28 @@
+<<<<<<< Updated upstream
 #!/usr/bin/env bash
 set -euo pipefail
+=======
+#!/bin/bash
+
+A=(sck-core-api
+sck-core-cli
+sck-core-codecommit
+sck-core-component
+sck-core-db
+sck-core-deployspec
+sck-core-docker
+sck-core-docker-base
+sck-core-docker-server
+sck-core-docs
+sck-core-execute
+sck-core-framework
+sck-core-invoker
+sck-core-organization
+sck-core-report
+sck-core-runner
+sck-core-ui
+sck-core-ai)
+>>>>>>> Stashed changes
 
 # List of submodules/projects to update
 A=(

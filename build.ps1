@@ -55,10 +55,10 @@ if (Test-Path -Path "build" -PathType Container) {
     Remove-Item -Path "build" -Recurse -Force
 }
 
-Write-Host "`n---- Installing the project and depndencies"
+Write-Host "`n---- Installing the project and dependencies"
 
 # install project dependencies
-uv install --all-extras
+uv sync --all-extras
 
 Write-Host "`n---- Building the distribution files for project: $packageName v${version}`n"
 

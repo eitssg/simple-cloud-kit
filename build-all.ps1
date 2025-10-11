@@ -56,7 +56,8 @@ $projects = @(
     "sck-core-api",
     "sck-core-codecommit"
     "sck-core-cli",
-    "sck-core-docs"
+    "sck-core-docs",
+    "sck-core-ai"
 )
 
 foreach ($p in $projects) {
