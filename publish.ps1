@@ -1,3 +1,8 @@
+param(
+    [switch]$Force,
+    [switch]$Verbose
+)
+
 # Get the current folder name
 $packageName = (Get-Item -Path ".\").Name
 
@@ -16,15 +21,69 @@ if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
 
 }
 
-# if the dist folder is empty, return with error "No distribution files found. Run 'poetry build' to create them."
+# if the dist folder is empty, return with error "No distribution files found. Run 'uv build' to create them."
 if (-not (Test-Path -Path "./dist" -PathType Container) -or
     (-not (Get-ChildItem -Path "./dist" -File | Where-Object { $_.Name -match "\.whl$|\.tar\.gz$" }))) {
-    Write-Host "No distribution files found. Run 'poetry build' to create them."
+    Write-Host "No distribution files found. Run 'uv build' to create them."
     exit 1
 }
 
-# Set the URL for the nexus-releases repository
-poetry config repositories.nexus-releases $Env:NEXUS_SERVER/repository/pypi-releases/
+if ($Force) {
+    # Get name and version from uv JSON output
+    $uvJson = uv version --output-format json | ConvertFrom-Json
+    $name = $uvJson.package_name
+    $version = $uvJson.version
+
+    if ($name -and $version) {
+        # First search for the component to get its ID
+        $searchUrl = "$Env:NEXUS_SERVER/service/rest/v1/search?repository=pypi-releases&name=$name&version=$version"
+        Write-Host "Searching for existing package $name $version in Nexus..."
+
+        try {
+            # Use basic auth header like curl -u (to match publish.sh)
+            $authString = "$($Env:NEXUS_USERNAME):$($Env:NEXUS_PASSWORD)"
+            $authBytes = [System.Text.Encoding]::ASCII.GetBytes($authString)
+            $authBase64 = [Convert]::ToBase64String($authBytes)
+            $headers = @{ "Authorization" = "Basic $authBase64" }
+
+            $searchResponse = Invoke-WebRequest -Uri $searchUrl -Method Get -Headers $headers -ErrorAction Stop
+            if ($Verbose) {
+                $searchResponse  # This will display the response object
+            }
+            $searchData = $searchResponse.Content | ConvertFrom-Json
+
+            if ($searchData.items -and $searchData.items.Count -gt 0) {
+                $componentId = $searchData.items[0].id
+                $deleteUrl = "$Env:NEXUS_SERVER/service/rest/v1/components/$componentId"
+
+                Write-Host "Force deleting existing package $name $version (ID: $componentId) from Nexus..."
+                # Try the delete with the same auth header
+                try {
+                    $deleteResponse = Invoke-WebRequest -Uri $deleteUrl -Method Delete -Headers $headers -ErrorAction Stop
+                    if ($Verbose) {
+                        $deleteResponse  # This will display the response object
+                    }
+                    Write-Host "Deleted existing package."
+                } catch {
+                    $statusCode = $_.Exception.Response.StatusCode.value__
+                    $statusDescription = $_.Exception.Response.StatusDescription
+                    Write-Host "API Delete failed: $statusCode ($statusDescription)"
+                    Write-Host "Request URL: $deleteUrl"
+                    Write-Host "Continuing with publish anyway..."
+                }
+            } else {
+                Write-Host "Package $name $version not found in Nexus - nothing to delete."
+            }
+        } catch {
+            $statusCode = $_.Exception.Response.StatusCode.value__
+            $statusDescription = $_.Exception.Response.StatusDescription
+            Write-Host "Failed to search for existing package: $statusCode ($statusDescription)"
+            Write-Host "Cannot determine if package exists for force delete."
+        }
+    } else {
+        Write-Host "Could not get name/version from uv for force delete."
+    }
+}
 
 # Publish the package to PyPI repository
-poetry publish --repository nexus-releases -u $Env:NEXUS_USERNAME -p $Env:NEXUS_PASSWORD
+uv publish --config-file ..\uv.toml

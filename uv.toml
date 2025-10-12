@@ -1,0 +1,13 @@
+
+## uv configuration for publishing to Nexus
+[[index]]
+type = "pypi"
+name = "nexus"
+url = "https://monster-jj.jvj28.com:9091/repository/pypi/simple"
+default = true
+
+publish-url = "https://monster-jj.jvj28.com:9091/repository/pypi-releases/"
+username = "{env:NEXUS_USERNAME}"
+password = "{env:NEXUS_PASSWORD}"
+
+verify_ssl = true

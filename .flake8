@@ -1,22 +1,19 @@
 [flake8]
+exclude = .git,__pycache__,build,dist,venv,.venv,htmlcov,docs
+
 # Maximum line length for the code
 max-line-length = 150
-
-# Exclude specific directories from linting
-exclude =
-    .git,
-    __pycache__,
-    build,
-    dist,
-    venv,
-    .venv
 
 # Ignore specific warnings or errors
 # For example, E501 is the error code for line length exceeding the max length
 ignore =
     E501,
     W503,
-    E203
+    E203,
+    C901,  
+    F403,
+    F401
+# Disable cyclomatic complexity check (handled via code review / targeted refactors)
 # Set the base directory for running flake8
 # By default, it's the current directory
 # You can specify another directory if needed

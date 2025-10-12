@@ -1,4 +1,4 @@
-# Finding the Python interpreter and building the project using Poetry
+# Finding the Python interpreter and building the project using UV
 $pythonCommand = Get-Command python
 
 # If the python interpreter is not found, return with error "Python interpreter not found. Please install Python."
@@ -16,35 +16,11 @@ if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
     exit 1
 }
 
-# if the virtual environment does not exist, return with error "Virtual environment does not exist. Run 'poetry install' to create it."
-if (-not (Test-Path -Path ".\.venv" -PathType Container)) {
-    Write-Host "Creating virtual environment..."
-    python -m venv .\.venv
-    . .\.venv\Scripts\Activate.ps1
-    python -m pip install -q --upgrade pip
-    python -m pip install -q poetry poetry-dynamic-versioning
-}
-else {
-    . .\.venv\Scripts\Activate.ps1
-}
-
-# if the virtual environmewnt is not activated, activate it
-if (-not $env:VIRTUAL_ENV) {
-    Write-Host "Cannot activate virtual environment..."
-    exit 1
-}
-
 Write-Host "---- Python version and source folder`n"
 $pythonCommand = Get-Command python
 $pythonCommand | Select-Object -Property Version, Source | Format-List | Out-String -Stream | Select-String -Pattern "Version|Source"
 
-# Check if poetry is installed
-if (-not (Get-Command poetry -ErrorAction SilentlyContinue)) {
-    Write-Host "Poetry is not installed. Installing it."
-    python -m pip install -q poetry poetry-dynamic-versioning
-}
-
-$version = (poetry version -s)
+$version = (uv version --short)
 
 Write-Host "`n---- PACKAGING project: $packageName v${version} for Lambda`n"
 
@@ -61,8 +37,8 @@ if (Test-Path -Path "package" -PathType Container) {
 
 write-Host "Packaging Lambda $packageName"
 
-# Get the current version of the poetry version -s command
-$version = (poetry version -s)
+# Get the current version of the uv version -s command
+$version = (uv version --short)
 
 # Package Name
 $artefactName = "$packageName-$version.zip"

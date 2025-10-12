@@ -1,0 +1,45 @@
+{
+  "servers": {
+    "github-mcp": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp"
+    },
+    "sck-core-ai": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "core_ai.mcp_server"
+      ],
+      "cwd": "D:\\Development\\simple-cloud-kit-oss\\simple-cloud-kit\\sck-core-ai",
+      "env": {
+        "LOCAL_MODE": "true",
+        "LOG_LEVEL": "INFO"
+      }
+    },
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-filesystem",
+        "D:\\Development\\simple-cloud-kit-oss\\simple-cloud-kit"
+      ]
+    },
+    "python-docs": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-python-docs"
+      ]
+    },
+    "aws": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-aws"
+      ]
+    }
+  }
+}

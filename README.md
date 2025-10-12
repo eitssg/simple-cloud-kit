@@ -38,6 +38,19 @@ The model for the enterprise is based on the concept of *seperation of duties*. 
 
 ## Persona's
 
+there will be 9 roles or personas: 
+
+1) billing (organizations, managment accont, AWS SSO, OU's out policy), 
+2) identity (users, IAM, policy, SSL CA, certs TLS certs), 
+3) security (SIEM, guard duty, seucrity hub, aws config), 
+4) operations (logwatch, logs, cloudwatch logs, cloudwatch, (e.g. ELK, prometheus, grafana)),  
+5) automation (deveops, automation (core-automation)), 
+6) networks (vpc, zones, regions, direct connect)
+7) firewall (shield, firewall, CDN) 
+8) operating systems (EC2 images, VA (anti-virus or CVE scanning))
+9) database (RDS as 'shared service')
+
+
 **Billing / Finance Team**
 This team is responsible for the Accounting, Billing, and payments for AWS within the enterprise.
 
@@ -419,6 +432,14 @@ Do something like above or similar.  Then you can run "core" from anywhere.  Eve
 
 ##### step 1
 
+Make sure UV is installed
+
+```bash
+wget -qO- https://astral.sh/uv/install.sh | sh
+```
+
+##### step 2
+
 Clone the repositry:
 
 ```bash
@@ -428,15 +449,6 @@ python -m venv .venv
 ```
 There are 14 git submodules in this repo.  Sync all the submodules and pull all the subprojects
 
-##### step 2
-
-In IntelliJ or VSCode, select this python as the interpreter.  
-
-install poetry
-```bash
-source .venv/bin/activate
-pip install poetry poetry-dynamic-versioning
-```
 
 Next, evaluate the build tool scripts for windows (.ps1) powershell, or mac/linux (.sh) bash (not zsh or sh...bash)
 

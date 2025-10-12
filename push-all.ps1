@@ -27,8 +27,20 @@ if (-not ($tag -match "^v\d+\.\d+\.\d+$")) {
 }
 
 # define a list of folders to iterate over
-$folders = @("sck-core-api", "sck-core-cli", "sck-core-component", "sck-core-db", "sck-core-deployspec", "sck-core-docker",
-"sck-core-docs", "sck-core-execute", "sck-core-framework", "sck-core-invoker", "sck-core-runner")
+$folders = @(
+    "sck-core-api", 
+    "sck-core-cli", 
+    "sck-core-component", 
+    "sck-core-db", 
+    "sck-core-deployspec", 
+    "sck-core-docker",
+    "sck-core-docs", 
+    "sck-core-execute", 
+    "sck-core-framework", 
+    "sck-core-invoker", 
+    "sck-core-runner", 
+    "sck-core-ai"
+)
 
 # iterate over the folders.  For each folder:
 foreach ($folder in $folders) {
@@ -61,9 +73,6 @@ foreach ($folder in $folders) {
 
     # push the tag to the remote repository
     git push origin $tag
-
-    # build the project with "..\build.ps1" command
-    ..\build.ps1
 
     # change back to the parent folder
     Set-Location -Path $currentFolder

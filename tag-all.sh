@@ -41,7 +41,7 @@ for folder in "${folders[@]}"; do
     packageName=$(basename "$PWD")
 
     # get the version from the pyproject.toml file
-    version=$(poetry version -s)
+    version=$(uv version --short)
 
     # write the project name and version
     echo "Checking project: $packageName v${version}"

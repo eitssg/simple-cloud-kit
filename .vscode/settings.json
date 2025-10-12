@@ -1,8 +1,21 @@
 {
     "yaml.customTags": [
-        "!Ref", "!GetAtt", "!Sub", "!Join", "!Select", "!Split",
-        "!Base64", "!If", "!Equals", "!And", "!Or", "!Not",
-        "!FindInMap", "!ImportValue", "!Condition", "!Transform"
+        "!Ref",
+        "!GetAtt",
+        "!Sub",
+        "!Join",
+        "!Select",
+        "!Split",
+        "!Base64",
+        "!If",
+        "!Equals",
+        "!And",
+        "!Or",
+        "!Not",
+        "!FindInMap",
+        "!ImportValue",
+        "!Condition",
+        "!Transform"
     ],
     "files.associations": {
         "**/platform/components/*.yaml": "yaml"
@@ -22,7 +35,7 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-       "sck-core-*/": true
+        "xsck-core-*/": true
     },
     "search.exclude": {
         "**/node_modules": true,
@@ -36,7 +49,7 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-       "sck-core-*/": true
+        "xsck-core-*/": true
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,
@@ -47,6 +60,19 @@
         "**/bower_components/**": true,
         "**/dist/**": true,
         "**/build/**": true,
-       "sck-core-*/": true
-    }
+        "xsck-core-*/": true
+    },
+    "python.testing.pytestArgs": [
+        "."
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "python-envs.pythonProjects": [
+        {
+            "path": "",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
 }

@@ -1,7 +1,7 @@
 # Get the current folder name
 $packageName = (Get-Item -Path ".\").Name
 
-$version = (poetry version -s)
+$version = (uv version)
 
 Write-Host "`n---- LINTING project: $packageName v${version}"
 
@@ -11,7 +11,7 @@ if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
     return
 }
 
-poetry run black .
+uv run black .
 
-poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
