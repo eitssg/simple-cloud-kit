@@ -15,7 +15,6 @@ dependencies = [
     "rich>=14.1.0",
     "cfn-lint>=1.40.0",
     "pydot>=4.0.1",
-    "sphinx-rtd-theme>=3.0.2",
 ]
 
 [tool.hatch.build.targets.wheel]

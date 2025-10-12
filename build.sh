@@ -49,7 +49,7 @@ get_desired_python_version() {
 }
 
 ensure_python_version_installed() {
-    local desired=$(grep "requires-python"  pyproject.toml | cut -f 2 -d'"')
+    local desired="$1"
 
     echo "Desired Python version: $desired"
 

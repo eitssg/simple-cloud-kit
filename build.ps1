@@ -1,14 +1,90 @@
-# Finding the Python interpreter and building the project using UV
-$pythonCommand = Get-Command python
+param(
+    [switch]$NoDev,
+    [switch]$SkipTests,
+    [switch]$New,
+    [switch]$Package,
+    [switch]$Publish,
+    [switch]$Force,
+    [switch]$Help
+)
 
-# If the python interpreter is not found, return with error "Python interpreter not found. Please install Python."
-if (-not $pythonCommand) {
-    Write-Host "Python interpreter not found. Please install Python."
+# Store script name for usage display
+$ScriptName = $MyInvocation.MyCommand.Name
+
+function Show-Usage {
+    Write-Host @"
+Usage: $ScriptName [-NoDev] [-SkipTests] [-New] [-Package] [-Publish] [-Force] [-Help]
+
+Options:
+  -NoDev        Disable development mode (default is enabled: uv sync --all-extras)
+  -SkipTests    Skip running tests
+  -New          Recreate venv (.venv) before install
+  -Package      If .lambda exists, run package.ps1 to build Lambda bundle
+  -Publish      Run publish step after build/tests
+  -Force        Force overwrite when publishing
+  -Help         Show this help and exit.
+"@
+}
+
+if ($Help) {
+    Show-Usage
+    exit 0
+}
+
+# Determine desired Python version for this module
+function Get-DesiredPythonVersion {
+    if ($env:PYTHON_VERSION) {
+        return $env:PYTHON_VERSION
+    }
+    if (Test-Path ".python-version") {
+        return (Get-Content ".python-version" | Select-Object -First 1).Trim()
+    }
+    if (Test-Path "pyproject.toml") {
+        $req = Select-String -Path "pyproject.toml" -Pattern '^\s*requires-python\s*=' | Select-Object -First 1
+        if ($req) {
+            $req = $req.Line -replace '.*"([^"]+)".*', '$1'
+            if ($req -match '3\.12') { return "3.12" }
+            if ($req -match '>?=\s*3\.11' -and $req -match '<\s*3\.13') { return "3.12" }
+            $exact = [regex]::Match($req, '==\s*([0-9]+\.[0-9]+)').Groups[1].Value
+            if ($exact) { return $exact }
+            $simple = [regex]::Match($req, '([0-9]+\.[0-9]+)').Groups[1].Value
+            if ($simple -eq "3.11") { return "3.12" }
+            if ($simple) { return $simple }
+        }
+    }
+    return "3.12"
+}
+
+function Test-PythonVersionInstalled {
+    param([string]$Desired)
+    Write-Host "Desired Python version: $Desired"
+    & uv run ../test-python.py $Desired
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Python $Desired is not installed. Aborting..."
+        exit 1
+    }
+    Write-Host "Python $Desired is installed."
+}
+
+# Exit if the python command cannot be found
+if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
+    Write-Host "Python could not be found"
     exit 1
 }
 
 # Get the current folder name
 $packageName = (Get-Item -Path ".\").Name
+
+# Force deactivate any active virtual environment to avoid confusing uv
+if ($env:VIRTUAL_ENV) {
+    if (Get-Command deactivate -ErrorAction SilentlyContinue) {
+        deactivate
+    } else {
+        # Fallback: manually unset venv vars
+        $env:VIRTUAL_ENV = $null
+        $env:PATH = ($env:PATH -split ';' | Where-Object { $_ -notlike '*\.venv\*' }) -join ';'
+    }
+}
 
 # if the file pyproject.toml does not exist, return with error "Must be in project folder":
 if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
@@ -16,32 +92,32 @@ if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
     exit 1
 }
 
-# if the virtual environment does not exist, return with error "Virtual environment does not exist."
-if (-not (Test-Path -Path ".\.venv" -PathType Container)) {
-    Write-Host "Creating virtual environment..."
-    python -m venv .\.venv
+if (($env:NEW -eq "1") -or $New) {
+    Write-Host "Recreating virtual env"
+    # Use uv venv --clear to remove and recreate
+    uv venv --clear --python $desiredPy
+} else {
+    # if the .venv folder does not exist, create it (prefer uv-located interpreter when available)
+    if (-not (Test-Path -Path ".venv" -PathType Container)) {
+        if (Get-Command uv -ErrorAction SilentlyContinue) {
+            # Use uv to create venv with the desired Python
+            uv venv --python $desiredPy
+        } else {
+            python -m venv .venv
+        }
+    }
 }
 
-. .\.venv\Scripts\Activate.ps1
-
-
-# if the virtual environment is not activated, activate it
-if (-not $env:VIRTUAL_ENV) {
-    Write-Host "Cannot activate virtual environment..."
-    exit 1
-}
+# Note: With uv, we don't need to activate the venv explicitly; uv manages environments
 
 # Check if the virtual environment is activated and show only the version and source folder and do not show titles
 Write-Host "`n---- Python version and source folder"
-$pythonCommand = Get-Command python
-$pythonCommand | Select-Object -Property Version, Source | Format-List | Out-String -Stream | Select-String -Pattern "Version|Source"
+$pythonVersion = uv run python --version 2>&1
+$pythonSource = uv run python -c "import sys; print(sys.executable)" 2>&1
+Write-Host "Version: $pythonVersion"
+Write-Host "Source: $pythonSource"
 
-# Check if uv is installed
-if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
-    Write-Host "uv is not installed. You must install it in the global python environment."
-}
-
-$version = (uv version --short)
+$version = uv version --short
 
 Write-Host "`n---- BUILDING project: $packageName v${version}"
 
@@ -55,30 +131,31 @@ if (Test-Path -Path "build" -PathType Container) {
     Remove-Item -Path "build" -Recurse -Force
 }
 
-Write-Host "`n---- Installing the project and dependencies"
+Write-Host "`n---- Installing the project and dependencies using UV"
 
-# install project dependencies
-uv sync --all-extras
+# Install project dependencies
+if (-not $NoDev) {
+    Write-Host "Installing with DEVELOPMENT tools"
+    uv sync --all-extras
+} else {
+    uv sync
+}
 
-Write-Host "`n---- Building the distribution files for project: $packageName v${version}`n"
+Write-Host "`n---- Building the distribution files for project: $packageName v${version}"
 
 uv build
 
-# Move the files from the dist folder to the folder ../sck-core-docker/dist and create the destination folder if necessary
-$distPath = "..\sck-core-docker\dist"
+$distPath = "../sck-core-docker/dist"
 if (-not (Test-Path -Path $distPath -PathType Container)) {
-    New-Item -ItemType Directory -Path $distPath
+    New-Item -ItemType Directory -Path $distPath | Out-Null
 }
 
-# create a filePrefix for the package name changing dashes in the name to underscores
 $filePrefix = $packageName -replace '-', '_'
 
 # if the dist folder contains files with the project prefix remove them
 Get-ChildItem -Path $distPath -File | Where-Object { $_.Name -like "$filePrefix*" } | Remove-Item -Force
 
 # Copy the files from the dist folder to the destination folder
-Write-Host "`n---- Copying distribution files to $distPath"
-
 Get-ChildItem -Path "dist" -File | ForEach-Object {
     $destinationPath = Join-Path -Path $distPath -ChildPath $_.Name
     Copy-Item -Path $_.FullName -Destination $destinationPath -Force
@@ -86,7 +163,33 @@ Get-ChildItem -Path "dist" -File | ForEach-Object {
 Write-Host "`n---- Distribution files copied to $distPath"
 Write-Host "`n---- Build complete for project: $packageName v${version}"
 
+# Static checks when dev is enabled (default)
+if (-not $NoDev) {
+    # Lint/format gate
+    if (Test-Path "../flakeit.ps1") {
+        . ..\flakeit.ps1
+    }
+}
+
+# Tests when dev is enabled (default) and not skipped
+if (-not $NoDev -and -not $SkipTests) {
+    if (Test-Path "../pytest.ps1") {
+        . ..\pytest.ps1
+    }
+}
+
 # if the file .lambda exists then execute package.ps1 script
-if (Test-Path -Path ".\.lambda" -PathType Leaf) {
-    . ..\package.ps1 
+if ((Test-Path -Path ".\.lambda" -PathType Leaf) -and $Package) {
+    . ..\package.ps1
+}
+
+# Publish only when requested
+if ($Publish) {
+    if (Test-Path "../publish.ps1") {
+        if ($Force) {
+            . ..\publish.ps1 -Force
+        } else {
+            . ..\publish.ps1
+        }
+    }
 }

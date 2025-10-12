@@ -1,6 +1,16 @@
 # Copilot Instructions (Root)
 
-## � Plan → Approval → Execute Workflow (NEW – Mandatory)
+## Conversation Start Checklist (Mandatory for Agent Mode)
+
+At the beginning of every conversation or when entering "agent mode":
+- [ ] Reference this file and confirm Plan → Approval → Execute workflow.
+- [ ] Acknowledge precedence: Local submodule rules first, then root.
+- [ ] Flag any contradictions with core prompt behavior.
+- [ ] Require explicit user approval for non-trivial actions.
+
+Failure to complete this checklist may result in workflow violations.
+
+## � Plan → Approval → Execute Workflow (Mandatory)
 
 Effective immediately (per maintainer request), all non-trivial actions MUST follow this explicit workflow:
 
@@ -12,6 +22,9 @@ Effective immediately (per maintainer request), all non-trivial actions MUST fol
 - Trivial Q&A (purely explanatory answers, no code changes or repo-impacting suggestions) may skip the approval phase.
 - "Non-trivial" includes: modifying any repository file, generating patches, creating/deleting files or directories, running build/test/lint commands, or performing multi-step investigative searches whose output might bias subsequent changes.
 - If ambiguity exists (e.g., user asks a question that might imply edits), default to presenting a plan first.
+- Always summarize what you intend to do before doing it; do not assume implicit approval.
+- If a user asks a question, any question, or the prompt includes a question mark (?), do not perform any action other than answering the question.
+- Assume a question mark (?) indicates an instruction to "do not modify code" and simply answer the question or address the query.
 
 ### Exceptions
 - Explicit user override: If the user states "skip plan" / "no plan" / "do it now", you may proceed directly, but still summarize what you did afterward.
@@ -26,41 +39,33 @@ After executing approved steps:
 - List: Files created/edited/deleted (paths + 1-line purpose).
 - Validation: Summaries of build/lint/test (PASS/FAIL + brief failure cause if any) when those steps were part of the plan.
 - Requirements Coverage: Map approved steps → completion status.
+- Self-Audit: Confirm workflow adherence (e.g., "Plan presented: Yes; Approval obtained: Yes; No proactive defaults to core prompt").
 
 ### Conflict With Previous Guidance
 This workflow supersedes earlier proactive-execution language in local or submodule instructions. Other documents encouraging immediate action are now subordinate to this root policy unless explicitly overridden again by the maintainer.
 
 ---
 
-## �🚨 CRITICAL TERMINAL ENVIRONMENT SAFETY 🚨
+## Agent Mode Operations (Mandatory Enforcement)
 
-**MANDATORY REQUIREMENTS - FAILURE TO FOLLOW WILL DESTROY CODE:**
+When operating in "agent mode" or autonomous assistance:
+- Strictly adhere to Plan → Approval → Execute; no exceptions for efficiency.
+- Reference the Conversation Start Checklist at mode entry.
+- If core prompt urges proactive action, override with these instructions and flag the contradiction.
+- Halt all tool usage until user approval; summarize potential actions but do not execute.
+- Post-execution, include a workflow compliance summary in responses.
 
-1. **NEVER OPEN NEW TERMINALS**: Always use existing terminals in VS Code
-2. **VERIFY VIRTUAL ENVIRONMENT**: Before ANY terminal command, confirm the correct virtual environment is active
-3. **PROJECT-SPECIFIC VENV**: Each sck-core-* project has its own virtual environment  
-4. **CHECK PROMPT**: Terminal prompt MUST show correct project venv (e.g., `(sck-core-ai)`, `(sck-core-framework)`)
-5. **NO CROSS-PROJECT COMMANDS**: Never run commands from one project's venv in another project
+This ensures agent mode does not bypass safety protocols.
 
-**TERMINAL SAFETY CHECKLIST (EVERY SINGLE TIME):**
-- [ ] Is the correct project directory shown in terminal?
-- [ ] Is the correct virtual environment active in the prompt?
-- [ ] Am I using an existing terminal (not opening new pwsh)?
-- [ ] Will this command affect the right project?
-
-**IF ENVIRONMENT IS WRONG - STOP IMMEDIATELY**
-- Do NOT proceed with any commands
-- Navigate to correct project directory
-- Activate correct virtual environment
-- Verify prompt shows correct project before proceeding
+---
+## Submodule Precedence & Mapping
 
 This parent repo contains 17 submodules (separate projects/builds). Each may have its own Copilot rules. Use these precedence and mapping rules:
 
 Instruction precedence:
-1) Prefer the submodule-local `.github/copilot-instructions.md` if present.
-2) Include submodule `docs/**` conventions (style guides, API contracts).
-3) If absent, fall back to these root instructions and closest related submodule docs.
-4) On conflicts, prefer local (submodule) rules and surface a contradiction warning.
+1) Prefer the submodule-local `.github/copilot-instructions.md` if present, else use root `.github/copilot-instructions.md`.
+2) Include submodule `docs/build/**` .html or .md files as references.
+4) On conflicts, ask for clarificcation from the user.
 
 Submodules by tech:
 - Python: sck-core-api, sck-core-cli, sck-core-codecommit, sck-core-component, sck-core-db, sck-core-deployspec, sck-core-execute, sck-core-framework, sck-core-invoker, sck-core-organization, sck-core-report, sck-core-runner
@@ -71,21 +76,24 @@ Submodules by tech:
 ### Runtime Deployment Matrix
 Most core Python modules are still deployed as AWS Lambda functions. Two exceptions are explicitly containerized services:
 
-| Module | Runtime | Notes |
-|--------|---------|-------|
-| sck-core-framework | Lambda | Library only (imported by Lambdas) |
-| sck-core-api | Lambda | API Gateway + FastAPI dev adapter |
-| sck-core-execute | Lambda | Action execution engine |
-| sck-core-runner | Lambda | Orchestration launcher |
-| sck-core-deployspec | Lambda | Spec generation/compilation |
-| sck-core-component | Lambda | Artefact & template management |
-| sck-core-invoker | Lambda | Cross-Lambda orchestration |
-| sck-core-organization | Lambda | Org / accounts management |
-| sck-core-report | Lambda | Status reporting |
-| sck-core-codecommit | Lambda | Event listener trigger |
-| sck-core-db | Lambda | DB helpers (library usage) |
-| sck-core-cli | Container (ECS/Fargate/Docker) | Long-lived automation / interactive CLI service image |
-| sck-core-ai | Container (ECS/Fargate/Docker) | AI / MCP / Langflow service (non-Lambda) |
+| Package               | Module            | Runtime | Notes                               |
+|-----------------------|-------------------|---------|-------------------------------------|
+| sck-core-framework    | core_framework    | Library | Library only (imported by Lambdas)  |
+| sck-core-framework    | core_logging      | Library | Structured logging                  |
+| sck-core-framework    | core_helper       | Library | AWS helpers (S3, Lambda, SNS, etc.) |
+| sck-core-framework    | core_renderer     | Library | Jinja2 rendering helpers            |
+| sck-core-db           | core_db           | Library | DB helpers (DynamoDB)                  |
+| sck-core-execute      | core_execute      | Lambda  | Action execution engine             |
+| sck-core-report       | core_report       | Lambda  | Status reporting                    |
+| sck-core-runner       | core_runner       | Lambda  | Orchestration launcher              |
+| sck-core-deployspec   | core_deployspec   | Lambda  | Spec generation/compilation              |
+| sck-core-component    | core_component    | Lambda  | Artefact & template management      |
+| sck-core-invoker      | core_invoker      | Lambda  | Cross-Lambda orchestration          |
+| sck-core-organization | core_organization | Lambda  | Org / accounts management           |
+| sck-core-api          | core_api          | Lambda  | API Gateway + FastAPI dev adapter   |
+| sck-core-codecommit   | core_codecommit   | Lambda  | Event listener trigger.  Calls API  |
+| sck-core-cli          | core_cli          | Program | Long-lived automation / interactive CLI service image |
+| sck-core-ai           | core_ai           | Program | AI / MCP / Langflow service (non-Lambda) |
 
 Rules in later sections that state "All Python runs in AWS Lambda" apply to Lambda-designated modules above and NOT to `sck-core-ai` or `sck-core-cli`. Those two may use asynchronous patterns and maintain process-local state appropriate for long-lived containers. When adding new modules, declare their runtime here first.
 
@@ -98,7 +106,7 @@ UI canonical rules:
 When editing outside sck-core-ui but affecting UI or API envelopes used by UI, open the UI docs and align.
 
 ## Contradiction Detection (Template)
-When an instruction appears to conflict with documented rules:
+When an instruction appears to conflict with documented rules, or when workflow violations occur (e.g., bypassing Plan → Approval → Execute):
 - Warn with the exact quote and the specific rule + source file.
 - Offer options: adjust the prompt to align with the rule, or update the source document if the rule has changed.
 - Provide a concrete example of the aligned approach.
@@ -107,20 +115,54 @@ Example response format:
 1) Warning format: "Your instruction '<quoted instruction>' conflicts with <rule summary> in <source file>."
 2) Options format: "Modify prompt to align with <rule summary>, or update <source file>."
 3) Example: "Prompt suggests attaching Authorization to S3 presigned PUT, but backend-code-style.md and UI auth docs prohibit it. Omit Authorization for presigned S3 calls."
+4) Workflow violation example: "Proceeding with file edits without approval conflicts with Plan → Approval → Execute in copilot-instructions.md. Present plan first."
+
+### Challenge Inefficient or Non-Best-Practice Approaches
+When a user requests implementation in a way that is inefficient, overly complex, or violates established best practices:
+- Challenge the approach politely but directly, explaining why it's problematic.
+- Suggest the more efficient/best-practice alternative with clear reasoning.
+- Provide concrete examples comparing the approaches.
+- If the user insists on the inefficient approach, implement it but note the concern.
+
+Example response format:
+1) Challenge: "Parsing package info from filenames is more complex and error-prone than reading from pyproject.toml."
+2) Alternative: "Use TOML parsing instead - it's simpler, more reliable, and uses the single source of truth."
+3) Comparison: "TOML: 2 simple regex patterns vs Filename: Complex regex handling multiple formats and edge cases."
+4) Implementation note: If proceeding with inefficient approach, add comment: "# Note: This approach is less efficient than TOML parsing but implemented as requested."
 
 ## Multi-Tenant Model (OAuth client_id vs tenant client)
 Authoritative clarifications for all suggestions involving auth, scoping, or resource filtering:
 
 Terminology:
 - client_id: OAuth SPA application identifier (one per deployed UI domain / installation). Exactly one active per browser session.
-- client (tenant): A tenant slug within the namespace of a single client_id. Not globally unique; only unique per client_id.
+- client (tenant): A tenant slug within the namespace of a single client_id. Not globally unique; only unique per client_id (e.g. `client_id_1` and `client_id_2` can access the same `client` tenant).
+
+the "clients` database model is 'global' and includes all fields needed to identify and authorize a tenant under a specific client_id.
+
+Example client records (conceptual):
+| client_id (hash key)  | client (range key)        | name           | ... |
+|------------|-------------|----------------|-----|
+| spa_1      | client_a    | Client A       | ... |
+| spa_1      | client_b    | Client B       | ... |  
+| spa_2      | client_a    | Client A       | ... |
+| spa_2      | client_c    | Client C       | ... !
+
+'client_a' is the SAME tenant under both 'spa_1' and 'spa_2'.
+
+Example client records (actual):
+| client (hash key) | client_id (field) | name          | ... |
+|-------------------|-------------------|---------------|-----|
+| client_a          | spa_1             | Client A      | ... |
+| client_b          | spa_1             | Client B      | ... |
+| client_c          | spa_2             | Client C      | ... |
+
+In the current model, 'client' is the hash key so spa's will not be able to share the same client slug. This is a known limitation and will be addressed in future versions.
 
 Session & Context Rules:
-- A session (and access token) is bound to exactly one client_id at a time.
+- A session (and access token) is bound to exactly one client_id and one client (tenant) at a time.
 - A user may be authorized for multiple tenant clients under that active client_id (an allow-list of slugs).
-- Switching the active tenant (client slug) happens inside the same SPA and may refresh/rotate the access token, but does not change client_id.
+- Switching the active tenant (client slug) happens inside the same SPA and may refresh/rotate the session token and access token, but does not change client_id.
 - Switching to a different client_id implies a completely separate SPA deployment (different domain) and requires a new auth flow (new session and tokens).
-- Never assume a tenant slug uniquely identifies a tenant without qualifying by client_id.
 
 Token Claims (expected):
 - cid: active client_id (SPA id).
@@ -142,12 +184,37 @@ Example (Incorrect → warn): "User can switch from spa_1 to spa_3 without re-au
 ## Technical Architecture & Development Patterns
 
 ### Core Development Workflows
+
 ### Import and YAML Parsing Policy (Global)
 - Do not wrap imports in try/except or use conditional imports. Imports must be unconditional and fail fast; if a dependency is needed, add it to the project.
-- For YAML parsing, prefer ruamel.yaml over PyYAML. Use a module-level YAML instance, for example:
-  - `from ruamel.yaml import YAML`
-  - `yaml = YAML(typ="safe")`
-  - Reuse this instance for all YAML load operations.
+
+### YAML Parsing (Mandatory)
+- For YAML parsing, use core_framework yaml helpsers, for example:
+  - `import core_framework as util`
+  - `yaml_data = util.from_yaml(yaml_string)`
+  - `yaml_data = util.load_yaml_file(file_path)`
+  - `with open(file_path, 'r') as f: yaml_data = util.read_yaml(f)`
+  - `yaml_string = util.to_yaml(data_dict)`
+  - `util.write_yaml_file(file_path, data_dict)`
+  - `with open(file_path, 'w') as f: util.write_yaml(data_dict, f)`
+
+- When reading YAML files, !include is supported and will recursively inline the included file content. Use relative paths from the including file.
+- Dates in YAML are ALWAYS converted to datetime objects from ISO 8601 strings. And when writing YAML, datetime objects are converted back to ISO 8601 strings.
+- All AWS tags !Ref, !Sub, !GetAtt, etc. are read, however, when written, the Fn::Func form is used (e.g. Fn::Sub instead of !Sub).
+
+### JSON Parsing (Mandatory)
+- For JSON parsing, use core_framework json helpers, for example:
+  - `import core_framework as util`
+  - `json_data = util.from_json(json_string)`
+  - `json_data = util.load_json_file(file_path)`
+  - `with open(file_path, 'r') as f: json_data = util.read_json(f)`
+  - `json_string = util.to_json(data_dict)`
+  - `util.write_json_file(file_path, data_dict)`
+  - `with open(file_path, 'w') as f: util.write_json(data_dict, f)`
+
+- Dates in JSON are ALWAYS converted to datetime objects from ISO 8601 strings. And when writing JSON, datetime objects are converted back to ISO 8601 strings.
+
+### Build & Test Commands (Mandatory)
 
 ```powershell
 # Root monorepo - builds all 17 submodules in dependency order
@@ -172,7 +239,7 @@ Example (Incorrect → warn): "User can switch from spa_1 to spa_3 without re-au
 - **Lambda-only scope**: Applies to modules labeled "Lambda" in the runtime matrix (excludes `sck-core-ai`, `sck-core-cli`).
 - **Synchronous handlers**: Keep Lambda entrypoints synchronous; wrap concurrency with threads if needed.
 - **No async def in handlers**: Avoid `async def` Lambda entrypoints (event loop cold start overhead & legacy design).
-- **ProxyEvent pattern**: Use `ProxyEvent(**event)` for API Gateway integration (auto-decodes base64, parses JSON).
+- **ProxyEvent pattern**: Use `ProxyEvent.model_validate(event)` for API Gateway integration (auto-decodes base64, parses JSON).
 - **Standard imports**: `import core_framework as util`, `import core_logging as log`, `import core_helper.aws as aws`.
 
 ### Python Runtime Model (Containerized Modules: sck-core-ai, sck-core-cli)
@@ -200,99 +267,81 @@ bucket.put_object(Key=key, Filename=filename, Body=stream)
 ```
 CLI/UI → core-invoker → core-runner → [core-deployspec, core-component]
 ```
-- **invoker**: Orchestrates execution requests
+- **invoker**: Orchestrates execution requests calls deployspec, and or component as needed and then runner to start the step function
 - **runner**: Executes Step Functions workflows  
-- **deployspec**: Manages deployment specifications
-- **component**: Handles component artifacts and metadata
+- **execute**: Runs ActionResources workflows (in parallel or sequence) (e..g. deploy cloudformation stacks, run scripts)
+- **deployspec**: Converts a deployment spec YAML into ActionResources
+- **component**: Generates CloudFormation templates and manages artefacts is S3/Filesystem
 
 ### API Response Standards
+
 **Non-OAuth endpoints:**
+
 ```json
-{ "status": "success", "code": 200, "data": {...}, "metadata": {...}, "message": "...", "errors": [...], "links": {...} }
+  { 
+    "status": "success", 
+    "code": 200, 
+    "data": {...}, 
+    "metadata": {...},
+    "message": "...", 
+    "errors": [...], 
+    "links": {...} 
+  }
 ```
+
 **OAuth endpoints:** Follow RFC 6749
 
 ### Build Dependencies
-- **Python 3.12** (development), **Python 3.11** (AWS Lambda runtime limit)
+- **Python 3.12** (latest AWS lambda runtime), 
 - **uv** All packages are uv with hatchling build engine 
 - **Core framework dependency order**: `sck-core-framework` must build first (base for all others)
 
 ### Core Modules Overview
 - **Modules**: 
-   - Use `core_framework`, `core_logging`, `core_db`, `core_api`.
-     - core_framework: tools for configuration values, environment variables, framework data models, constants, yaml/json helpers.
-     - core_logging: structured logging, log levels, correlation IDs. PRN identity and object formatter outputs
-     - core_helper.aws: AWS helpers (S3, Lambda, SNS, SQS, STS, IAM).
-       - Avoid `boto3`/`botocore` directly; use `core_helper.aws`.
-     - core_helper.magic: MagicS3Bucket.  Tools that allow AWS interface into local storage volumes or S3/Lambda based on core_framework.util.is_local_mode()
-     - core_renderer: Jinja2 filters and template rendering helpers.
-     - core_db: Database interface and models, DynamoDB/PynamoDB helpers. 
-     - core_execute: Lambda step-function. Defines Actions, ActionResources, and ActionSpec and the Action script library for running code within lambda step functions.  
-     - core_report: Pulls status from Action context and responds with a run status for hooks into CI/CD
-     - core_runner: Lambda function for kicking off core_execute step functions.  In local mode, calls core_execute directly and wraps execute in local thread for step-function simulation.
-     - core_deployspec: Lambda function generates, Compiles, Jinja2 transforms ActionsReources into a list of ActoinResources/ActionSpecs for core_execute. In local mode, reads/writes from local filesystem paths via MagicS3Bucket.
-     - core_component: Lambda function for managing components (packages, files, artefacts) in S3 and DynamoDB.  Compiles Core-Automation component resources into a CloudFormation template and provides ActionResources for core_execute. In local mode, stores/retrieves from local filesystem paths via MagicS3Bucket.
-     - core_invoker: Lambda function for invoking other lambda functions with retries and error handling. In local mode, calls core_runner, core_deployspec, core_component directly.
-     - core_organization: Lambda function for managing AWS Organizations, SCPs, and Accounts.
-     - core_codecommit: Lambda function for listening to AWS CodeCommit events (to kick off Core Automation pipeline).
-     - core_api: AWS API Gateway (remote operation) and FastAPI (local dev). Full API and execution of business logic.  In local mode, calls core_invoker directly and implements FastAPI interface.
+  - Use `core_framework`, `core_logging`, `core_db`, `core_api`.
+  - core_framework: tools for configuration values, environment variables, framework data models, constants, yaml/json helpers.
+  - core_logging: structured logging, log levels, correlation IDs. PRN identity and object formatter outputs
+  - core_helper.aws: AWS helpers (S3, Lambda, SNS, SQS, STS, IAM).
+    - Avoid `boto3`/`botocore` directly; use `core_helper.aws`.
+  - core_helper.magic: MagicS3Bucket.  Tools that allow AWS interface into local storage volumes or S3. when core_framework.util.is_use_S3() is 'false' the filesystem will be used.  When is_use_S3() is 'true' S3 will be used. (S3 mode can be `true` even when core_framework.util.is_local_mode() is `true`).
+     When is_local_mode() is `true` the CLI calls the lambda handlers directly rather than AWS lambda_client.invoke().
+  - core_renderer: Jinja2 filters and template rendering helpers.
+  - core_db: Database interface and models, DynamoDB/PynamoDB helpers. 
+  - core_execute: Lambda step-function. Defines Actions, ActionResources, and ActionSpec and the Action script library for running code within lambda step functions.  
+  - core_report: Pulls status from Action context and responds with a run status for hooks into CI/CD
+  - core_runner: Lambda function for kicking off core_execute step functions.  In local mode, calls core_execute directly and wraps execute in local thread for step-function simulation.
+  - core_deployspec: Lambda function generates, Compiles, Jinja2 transforms ActionsReources into a list of ActoinResources/ActionSpecs for core_execute. In local mode, reads/writes from local filesystem paths via MagicS3Bucket.
+  - core_component: Lambda function for managing components (packages, files, artefacts) in S3 and DynamoDB.  Compiles Core-Automation component resources into a CloudFormation template and provides ActionResources for core_execute. In local mode, stores/retrieves from local filesystem paths via MagicS3Bucket.
+  - core_invoker: Lambda function for invoking other lambda functions with retries and error handling. In local mode, calls core_runner, core_deployspec, core_component directly.
+  - core_organization: Lambda function for managing AWS Organizations, SCPs, and Accounts.
+    - core_codecommit: Lambda function for listening to AWS CodeCommit events (to kick off Core Automation pipeline).
+  - core_api: AWS API Gateway (remote operation) and FastAPI (local dev). Full API and execution of business logic.  In local mode, calls core_invoker directly and implements FastAPI interface.
 
 ## Development Environment Setup
 
 ### Initial Setup (Developer Onboarding)
-```bash
-# 1. Create Python virtual environment (in root or any submodule)
-python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# OR
-.\.venv\Scripts\Activate.ps1  # Windows PowerShell
 
-# 3. Switch to develop mode (for local development)
-uv run ./prebuild.py  # Sets develop=true in all pyproject.toml files
-
-# 4. Build all submodules
-./build-all.ps1  # Windows
-# OR  
-source ./build-all.sh  # Linux/Mac
+```powershell
+.\build-all.ps1  -New -Dev
 ```
 
-### Hybrid Development Approach (For Local Wheels)
-
-**CRITICAL**: When working with projects that depend on local SCK wheels (like sck-core-ai):
+OR
 
 ```bash
-# 1. Build dependency wheels first (e.g., sck-core-framework)
-cd sck-core-framework
-uv build                    # Creates wheel in dist/
-
-# 2. In dependent project, use hybrid approach
-cd ../sck-core-ai
-python -m venv .venv           # Manual venv creation
-.\.venv\Scripts\Activate.ps1   # Windows PowerShell
-
-# 3. Install local wheels with pip (RELIABLE)
-pip install ../sck-core-framework/dist/sck_core_framework-*.whl
-
-# 4. Install remaining deps with pip or uv
-pip install -e .               # Current project editable
-pip install pytest black flake8  # Dev dependencies
-
-# 5. Verify
-python -c "import core_logging; print('Success!')"
+./build-all.sh  --new --dev
 ```
-
-**Why Hybrid?**: uv excels at PyPI packages but has issues with local wheels. This approach combines the best of both tools.
 
 ### Development Workflow (Per Module)
 ```powershell
 # Standard build/test/lint cycle (run in any sck-core-* directory)
 ..\build.ps1      # uv install, dynamic versioning, build dist
-..\flakeit.ps1    # Black formatting + flake8 linting (E9,F63,F7,F82 only)
+..\flakeit.ps1    # Black formatting + flake8 linting 
 ..\pytest.ps1     # Run tests with coverage, auto-creates .env
 ..\publish.ps1    # Publish to Nexus repository (requires NEXUS_* env vars)
 ```
 
 ### UI Development Specifics
+
 ```bash
 cd sck-core-ui
 yarn install      # Install dependencies
@@ -324,10 +373,11 @@ LOG_LEVEL=DEBUG
 The codebase deliberately relies on Pydantic model validation and upstream request normalization so that endpoint implementations do NOT need to re-check types already enforced. Future suggestions must honor these guarantees and avoid adding redundant defensive patterns:
 
 ### Runtime Guarantees at API Endpoint Boundary
-1. `body` parameter passed into service endpoint handlers is either a `dict` (already parsed JSON) or `None` – never any other type.
+1. `body` parameter passed into service endpoint handlers is either a `dict` (already parsed JSON) or `str` (The body was NOT JSON) or `None` – never any other type.
 2. `security` / `security_context` (when present) is an `EnhancedSecurityContext` with a fully validated `jwt_payload` (`JwtPayload`). Its attributes (`cid`, `cnm`, `sub`, etc.) are safe for direct attribute access (no `getattr()` probes required).
 3. AI upstream responses are validated exactly once when converted into contract models (e.g., `TemplateGenerateResponse`). Cached copies originate from already validated instances.
 4. Envelope responses (`SuccessResponse`, `ErrorResponse`) take Python dicts or Pydantic models and handle `.model_dump()` internally—no need to manually coerce again.
+5. ALL Python developers STRICTLY obey all type-hints.  If a parameter is type-hinted as `Optional[Dict[str, Any]]`, do NOT add runtime checks for `isinstance(body, dict)` or `body is not None`—treat it as a dict or None per the contract.  If not optional, treat it as always present and of the correct type.
 
 ### Idempotency & Caching Rules
 1. Idempotent cache entries are stored only after a successful, validated model result is transformed to a dict; retrieving from cache does not require re-validation unless the schema version changes.
@@ -360,3 +410,11 @@ If future features require altering idempotency scope (e.g., workflow grouping, 
 
 ---
 This section exists to keep future automated or human contributors from reintroducing defensive boilerplate the framework already centralizes. Any suggestion conflicting with these guarantees should be flagged as a contradiction with this "Validated Model & Type Hint Guarantees" section.
+
+## User Confirmation Prompts (Templates)
+
+To ensure adherence, use these templates in responses requiring approval:
+
+- Plan Presentation: "Per the Plan → Approval → Execute workflow, here is the plan: [enumerated steps]. Awaiting approval."
+- Approval Request: "Awaiting your approval to proceed (e.g., 'approved' or 'proceed with step 1')."
+- Post-Execution Summary: "Executed approved steps. Deltas: [summary]. Workflow adhered: Yes."

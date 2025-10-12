@@ -6,12 +6,7 @@ name = "nexus"
 url = "https://monster-jj.jvj28.com:9091/repository/pypi/simple"
 default = true
 
-
 publish-url = "https://monster-jj.jvj28.com:9091/repository/pypi-releases/"
-
-# Nexus3 PyPI (Python Packages) repository upload endpoint (not the /simple index)
-
-# Use environment variables for credentials (do not hardcode secrets)
 username = "{env:NEXUS_USERNAME}"
 password = "{env:NEXUS_PASSWORD}"
 

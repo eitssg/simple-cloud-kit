@@ -16,19 +16,6 @@ if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
     exit 1
 }
 
-# if the virtual environment does not exist, return with error "Virtual environment does not exist"
-if (-not (Test-Path -Path ".\.venv" -PathType Container)) {
-    Write-Host "Creating virtual environment..."
-    python -m venv .\.venv
-}
-. .\.venv\Scripts\Activate.ps1
-
-# if the virtual environment is not activated, activate it
-if (-not $env:VIRTUAL_ENV) {
-    Write-Host "Cannot activate virtual environment..."
-    exit 1
-}
-
 Write-Host "---- Python version and source folder`n"
 $pythonCommand = Get-Command python
 $pythonCommand | Select-Object -Property Version, Source | Format-List | Out-String -Stream | Select-String -Pattern "Version|Source"
