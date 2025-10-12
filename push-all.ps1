@@ -74,9 +74,6 @@ foreach ($folder in $folders) {
     # push the tag to the remote repository
     git push origin $tag
 
-    # build the project with "..\build.ps1" command
-    ..\build.ps1
-
     # change back to the parent folder
     Set-Location -Path $currentFolder
 }

@@ -33,37 +33,8 @@ if ($Help) {
 
 # Determine desired Python version for this module
 function Get-DesiredPythonVersion {
-    if ($env:PYTHON_VERSION) {
-        return $env:PYTHON_VERSION
-    }
-    if (Test-Path ".python-version") {
-        return (Get-Content ".python-version" | Select-Object -First 1).Trim()
-    }
-    if (Test-Path "pyproject.toml") {
-        $req = Select-String -Path "pyproject.toml" -Pattern '^\s*requires-python\s*=' | Select-Object -First 1
-        if ($req) {
-            $req = $req.Line -replace '.*"([^"]+)".*', '$1'
-            if ($req -match '3\.12') { return "3.12" }
-            if ($req -match '>?=\s*3\.11' -and $req -match '<\s*3\.13') { return "3.12" }
-            $exact = [regex]::Match($req, '==\s*([0-9]+\.[0-9]+)').Groups[1].Value
-            if ($exact) { return $exact }
-            $simple = [regex]::Match($req, '([0-9]+\.[0-9]+)').Groups[1].Value
-            if ($simple -eq "3.11") { return "3.12" }
-            if ($simple) { return $simple }
-        }
-    }
-    return "3.12"
-}
-
-function Test-PythonVersionInstalled {
-    param([string]$Desired)
-    Write-Host "Desired Python version: $Desired"
-    & uv run ../test-python.py $Desired
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Python $Desired is not installed. Aborting..."
-        exit 1
-    }
-    Write-Host "Python $Desired is installed."
+    
+    return "3.12.11"
 }
 
 # Exit if the python command cannot be found
@@ -71,6 +42,8 @@ if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     Write-Host "Python could not be found"
     exit 1
 }
+
+$Env:UV_NO_PROGRESS=1
 
 # Get the current folder name
 $packageName = (Get-Item -Path ".\").Name
@@ -91,6 +64,8 @@ if (-not (Test-Path -Path "./pyproject.toml" -PathType Leaf)) {
     Write-Host "Must be in project folder"
     exit 1
 }
+
+$desiredPy=Get-DesiredPythonVersion
 
 if (($env:NEW -eq "1") -or $New) {
     Write-Host "Recreating virtual env"
