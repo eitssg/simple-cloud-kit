@@ -1,0 +1,83 @@
+{
+  "id": null,
+  "uid": "fastapi-overview",
+  "title": "FastAPI Overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "overwrite": true,
+  "time": { "from": "now-15m", "to": "now" },
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Targets Up",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "up{job=\"fastapi\"}", "refId": "A"}
+      ],
+      "options": {"reduceOptions": {"calcs": ["last"], "fields": "", "values": false}}
+    },
+    {
+      "type": "timeSeries",
+      "title": "HTTP Requests/s",
+      "gridPos": {"x": 6, "y": 0, "w": 18, "h": 8},
+      "targets": [
+        {"expr": "sum(rate(fastapi_requests_total{job=\"fastapi\"}[1m])) by (method, status)", "legendFormat": "{{method}} {{status}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeSeries",
+      "title": "Request Duration p95 (s)",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "histogram_quantile(0.95, sum by (le, method) (rate(fastapi_request_duration_seconds_bucket{job=\"fastapi\"}[5m])))", "legendFormat": "{{method}} p95", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeSeries",
+      "title": "Request Duration p50 (s)",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "histogram_quantile(0.50, sum by (le, method) (rate(fastapi_request_duration_seconds_bucket{job=\"fastapi\"}[5m])))", "legendFormat": "{{method}} p50", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeSeries",
+      "title": "Threads",
+      "gridPos": {"x": 0, "y": 16, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "process_threads{job=\"fastapi\"}", "legendFormat": "threads", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeSeries",
+      "title": "Python Heap (bytes)",
+      "gridPos": {"x": 12, "y": 16, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "python_tracemalloc_heap_current_bytes{job=\"fastapi\"}", "legendFormat": "heap", "refId": "A"}
+      ]
+    }
+    ,
+    {
+      "type": "stat",
+      "title": "Cache Objects",
+      "gridPos": {"x": 0, "y": 24, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "sck_cache_objects{job=\"fastapi\"}", "refId": "A"}
+      ],
+      "options": {"reduceOptions": {"calcs": ["last"], "fields": "", "values": false}}
+    },
+    {
+      "type": "table",
+      "title": "Cache Keys",
+      "gridPos": {"x": 6, "y": 24, "w": 18, "h": 8},
+      "targets": [
+        {"expr": "sck_cache_key_info{job=\"fastapi\"}", "refId": "A"}
+      ],
+      "transformations": [
+        {"id": "labelsToFields", "options": {"mode": "columns"}},
+        {"id": "filterFieldsByName", "options": {"include": {"names": ["key"]}}}
+      ]
+    }
+  ]
+}

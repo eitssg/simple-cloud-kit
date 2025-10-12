@@ -12,6 +12,22 @@ We will refer to the core services within the **SCK** as *core-automation* or in
 
 **Current Stage:** *development - incubation*
 
+## Using Copilot in this repo
+
+- Monorepo mapping and rules:
+    - Prefer submodule-local rules: each package includes `.github/copilot-instructions.md`.
+    - Include any submodule `docs/**` style/API guides.
+    - If absent, fall back to root: `.github/copilot-instructions.md`.
+    - On conflicts, use the contradiction template (warn, options, concrete example).
+- Tech map (quick): Python (api/cli/framework/db/execute/invoker/organization/report/runner/etc.), Docker (docker/base/server), Docs (Sphinx), UI (Node/React).
+- Standalone submodule clones:
+    - Every submodule works independently. Open its local `.github/copilot-instructions.md` for context.
+    - Each local file includes a “Standalone clone note” with links to UI/backend conventions and root Copilot docs online.
+    - READMEs in each submodule link to both the local and root Copilot instructions.
+- UI conventions used across modules (when UI-visible):
+    - See `sck-core-ui/docs/ui-style-guide.md`, `sck-core-ui/docs/auth-session-and-storage.md`, `sck-core-ui/docs/portfolio-model.md`, and `sck-core-ui/docs/backend-code-style.md`.
+    - Non-OAuth API responses: `{ status, code, data, metadata, message }`; OAuth per RFC 6749.
+
 #### The Model
 
 The model for the enterprise is based on the concept of *seperation of duties*.  Each task is conducted by a person having a *persona's* such that each of the teams responsible for governance of infrastructure services may operate the **Landing Zones** safely and in collaboration with other teams.
@@ -35,6 +51,8 @@ Typical subsystems that this team will access are:
 * Billing Dashboards
 * QuikSite Dashboards
 
+
+> Copilot: See repository guidance in `.github/copilot-instructions.md` (monorepo mapping, precedence, and contradiction template). Submodule READMEs link to their local instructions.
 **Identity Team**
 This team is accountable for all Users *(i.e. human users)* that need to access internal infrastrcture.
 
