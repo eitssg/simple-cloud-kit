@@ -44,6 +44,49 @@ After executing approved steps:
 ### Conflict With Previous Guidance
 This workflow supersedes earlier proactive-execution language in local or submodule instructions. Other documents encouraging immediate action are now subordinate to this root policy unless explicitly overridden again by the maintainer.
 
+## Enhanced Question Handling & Violation Prevention
+
+### Question Detection Examples
+Questions that trigger "answer-only" mode:
+- "How do I...?" 
+- "What's the best way to...?"
+- "Why did...?"
+- "What does...?"
+- Any statement ending with "?"
+
+Questions that allow actions:
+- "Create a function for..."
+- "Add this feature to..."
+- "Fix the bug in..."
+- "Please make the necessary modifications..."
+
+### Violation Protocol
+If instructions are violated:
+1. Immediately stop all actions
+2. Provide clear explanation of violation
+3. Do not attempt to "fix" or "clean up" violations
+4. Wait for explicit user direction on next steps
+
+### Enhanced Question Detection
+**MANDATORY**: Any user message containing "?" must be treated as a question requiring only an answer response.
+
+**MANDATORY**: Do not interpret questions as implicit requests for code changes, file creation, or tool execution.
+
+**MANDATORY**: When in doubt, default to "answer-only" mode.
+
+### Response Self-Audit
+Before responding to any user message:
+1. Check for question marks (?)
+2. If found: Answer only, no actions
+3. If none: Check if Plan → Approval → Execute is needed
+4. Document the decision in response
+
+### Critical Violations
+Creating files, editing code, or running commands when questions are asked constitutes a critical violation requiring:
+- Immediate cessation of all tool usage
+- Clear admission of violation
+- Explicit user permission before resuming normal operation
+
 ---
 
 ## Agent Mode Operations (Mandatory Enforcement)

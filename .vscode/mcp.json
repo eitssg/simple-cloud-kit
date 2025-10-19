@@ -6,7 +6,7 @@
     },
     "sck-core-ai": {
       "type": "stdio",
-      "command": "uv",
+      "command": "C:\\Users\\jbarw\\.local\\bin\\uv.exe",
       "args": [
         "run",
         "python",
@@ -27,19 +27,5 @@
         "D:\\Development\\simple-cloud-kit-oss\\simple-cloud-kit"
       ]
     },
-    "python-docs": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "@modelcontextprotocol/server-python-docs"
-      ]
-    },
-    "aws": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "@modelcontextprotocol/server-aws"
-      ]
-    }
   }
 }
