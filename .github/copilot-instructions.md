@@ -14,12 +14,13 @@ Failure to complete this checklist may result in workflow violations.
 
 Effective immediately (per maintainer request), all non-trivial actions MUST follow this explicit workflow:
 
-1. Plan: Provide a concise, enumerated plan of intended actions (file reads, searches, edits, test runs, builds). Each step should map to a clear outcome.
-2. Await Approval: Do NOT execute tools, create, edit, or delete files until the user explicitly approves (e.g., "approved", "go", "proceed step 1", or selective step approvals). If the user approves only a subset, proceed only with those steps and re-present an updated plan for the remainder.
-3. Execute: After approval, carry out actions, batching related read-only steps where possible, then report deltas (what changed vs. the plan) before continuing.
+1. Plan: When work includes non-trivial actions (edits, file creation/deletion, builds, tests, etc.), provide a concise, enumerated plan that maps each action to an outcome. Purely read-only context gathering (file reads, searches, listings) does **not** need a plan.
+2. Await Approval: Do NOT execute non-trivial actions until the user explicitly approves (e.g., "approved", "go", "proceed step 1", or selective step approvals). If the user approves only a subset, proceed only with those steps and re-present an updated plan for the remainder. Read-only analysis may proceed immediately.
+3. Execute: After approval, carry out the authorized actions, batching related work where possible, then report deltas (what changed vs. the plan) before continuing.
 
 ### Scope & Definitions
 - Trivial Q&A (purely explanatory answers, no code changes or repo-impacting suggestions) may skip the approval phase.
+- Read-only analysis (file reads, searches, listings) is treated as trivial; you may gather context without presenting a plan or waiting for approval, and you must not pause to request approval for analysis-only steps.
 - "Non-trivial" includes: modifying any repository file, generating patches, creating/deleting files or directories, running build/test/lint commands, or performing multi-step investigative searches whose output might bias subsequent changes.
 - If ambiguity exists (e.g., user asks a question that might imply edits), default to presenting a plan first.
 - Always summarize what you intend to do before doing it; do not assume implicit approval.
