@@ -17,16 +17,6 @@
         "!Condition",
         "!Transform"
     ],
-    "files.associations": {
-        "**/platform/components/*.yaml": "yaml"
-    },
-    "yaml.schemas": {
-        "https://raw.githubusercontent.com/awslabs/goformation/master/schema/cloudformation.schema.json": [
-            "**/platform/components/*.yaml",
-            "cloudformation*.yaml",
-            "*.cfn.yaml"
-        ]
-    },
     "iis.configDir": "",
     "files.exclude": {
         "**/.git": true,
